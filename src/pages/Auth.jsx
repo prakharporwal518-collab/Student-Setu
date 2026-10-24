@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Building, Eye, EyeOff, GraduationCap, Lightbulb, LogIn, ShieldCheck, UserPlus, UtensilsCrossed } from 'lucide-react'
+import { Building, Eye, EyeOff, GraduationCap, Lightbulb, LogIn, Presentation, ShieldCheck, UserPlus, UtensilsCrossed } from 'lucide-react'
 import { Logo } from '../components/ui'
 import { CityArt } from '../components/ui/Illustrations'
 import { demoUsers, roleHome, useAuth, useToast } from '../context/AppContext'
 import { cities } from '../data/common'
 
 const signupRoles = [
-  { id: 'student', label: 'Student', icon: GraduationCap, text: 'Find stays, food, notes & mentors' },
+  { id: 'student', label: 'Student', icon: GraduationCap, text: 'Skill gap map, learning plan & badges' },
+  { id: 'teacher', label: 'Teacher', icon: Presentation, text: 'AI lesson plans, quizzes & class insights' },
   { id: 'owner', label: 'Hostel Owner', icon: Building, text: 'List hostels, PGs or rooms' },
   { id: 'provider', label: 'Tiffin Provider', icon: UtensilsCrossed, text: 'List tiffin & mess services' },
   { id: 'mentor', label: 'Mentor', icon: Lightbulb, text: 'Guide students under SIDF' },
@@ -107,7 +108,7 @@ export function Signup() {
 
   return (
     <AuthShell title="Create your account" subtitle="Choose how you’ll use Student Setu">
-      <div className="mb-5 grid grid-cols-2 gap-2">
+      <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {signupRoles.map((r) => (
           <button key={r.id} type="button" onClick={() => setRole(r.id)} aria-pressed={role === r.id} className={`rounded-2xl border p-3 text-left transition ${role === r.id ? 'border-brand-700 bg-brand-50 ring-2 ring-brand-200 dark:border-brand-400 dark:bg-brand-500/10 dark:ring-brand-500/30' : 'border-slate-200 hover:border-brand-300 dark:border-white/10'}`}>
             <r.icon className={`h-5 w-5 ${role === r.id ? 'text-brand-800 dark:text-brand-200' : 'text-slate-400'}`} />

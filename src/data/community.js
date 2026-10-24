@@ -85,9 +85,9 @@ export const communities = [
 ]
 
 export const testimonials = [
-  { name: 'Ananya Sharma', photo: 'KxHcyNOIO_M', meta: 'B.Tech, RGPV', rating: 5, text: 'Student Setu helped me find a safe and affordable PG near my college. The local student community is also very helpful!' },
-  { name: 'Rohit Verma', photo: 'Y_fmOp3Gnu0', meta: 'B.Sc, DAVV', rating: 5, text: 'The tiffin service I found here is amazing. Home-style food and on time delivery. Highly recommended!' },
-  { name: 'Sneha Patel', photo: 'ekzJvt0xFGw', meta: 'BBA, LNCT', rating: 5, text: 'The study resources and college info section is super useful. Everything I need is in one place.' },
+  { name: 'Ananya Sharma', photo: 'KxHcyNOIO_M', meta: 'B.Tech, RGPV', rating: 5, text: 'Skill Bridge showed my RGPV syllabus covered only a quarter of what web-developer roles need. The weekly plan filled the rest — I got my first internship!' },
+  { name: 'Rohit Verma', photo: 'Y_fmOp3Gnu0', meta: 'B.Sc, DAVV', rating: 5, text: 'Free PYQs and topic quizzes with explanations helped me clear my semester. Listening to notes in Hindi on the bus is a life-saver.' },
+  { name: 'Sneha Patel', photo: 'ekzJvt0xFGw', meta: 'BBA, LNCT', rating: 5, text: 'I earned verified badges in Digital Marketing and Excel — recruiters could check them with one link. Everything is in one place.' },
   { name: 'Aarav Gupta', photo: '5VOlFFnVG1Q', meta: 'B.Tech, DTU', rating: 5, text: 'Got my first internship through the year-wise guidance. The roadmap for 2nd years is gold.' },
-  { name: 'Pooja Ahirwar', meta: 'BA, Bhopal', rating: 5, text: 'I didn’t know government hostels existed for students like me. I now save over ₹60,000 every year.' },
+  { name: 'Prof. Meena Joshi', meta: 'Govt. College, Bhopal', rating: 5, text: 'Teacher Copilot drafts my lesson plan and quiz in minutes, and the heatmap tells me which topic to re-teach.' },
 ]

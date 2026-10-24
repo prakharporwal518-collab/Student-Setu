@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BadgeCheck, ChevronRight, ImageOff, Search, Star, X } from 'lucide-react'
+import { useLite } from '../../context/AppContext'
 
 /* ---------------------------------------------------------------- Logo */
-export function Logo({ light = false, compact = false }) {
+export function Logo({ light = false, compact = false, navbar = false }) {
   return (
     <Link to="/" className="group flex items-center gap-2.5" aria-label="Student Setu home">
       <span className="relative grid h-10 w-10 place-items-center rounded-xl bg-brand-800 shadow-soft transition group-hover:rotate-[-6deg] dark:bg-brand-600">
@@ -17,7 +18,7 @@ export function Logo({ light = false, compact = false }) {
         <span className={`block whitespace-nowrap font-display text-xl font-extrabold tracking-tight ${light ? 'text-white' : 'text-brand-900 dark:text-white'}`}>
           Student <span className="text-saffron-500">Setu</span>
         </span>
-        {!compact && <span className={`block whitespace-nowrap text-[11px] font-medium ${light ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>Bridging Students, Building Futures</span>}
+        {!compact && <span className={`${navbar ? 'block xl:hidden 2xl:block' : 'block'} whitespace-nowrap text-[11px] font-medium ${light ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>Bridging Students, Building Futures</span>}
       </span>
     </Link>
   )
@@ -29,7 +30,9 @@ export function Logo({ light = false, compact = false }) {
  * (or a branded placeholder) — so a missing photo never looks broken.
  */
 export function SmartImage({ src, srcs, alt, className = '', fallbackLabel, icon: Icon = ImageOff, fallback, imgClassName = '' }) {
-  const list = [src, ...(srcs ?? [])].filter(Boolean)
+  const { lite } = useLite() ?? {}
+  // Lite mode skips photos entirely to save mobile data.
+  const list = lite ? [] : [src, ...(srcs ?? [])].filter(Boolean)
   const key = list.join('|')
   const [index, setIndex] = useState(0)
   const [loaded, setLoaded] = useState(false)
@@ -130,12 +133,13 @@ export function Stars({ value = 5, onChange, size = 'h-4 w-4' }) {
 const avatarColors = ['from-brand-500 to-indigo-700', 'from-saffron-400 to-rose-500', 'from-emerald-400 to-teal-600', 'from-violet-500 to-fuchsia-600', 'from-sky-400 to-blue-600', 'from-amber-400 to-orange-600']
 export function Avatar({ name = '?', size = 'h-12 w-12', className = '', src }) {
   const [failed, setFailed] = useState(false)
+  const { lite } = useLite() ?? {}
   const initials = name.replace(/^(Dr\.|Mr\.|Mrs\.)\s*/i, '').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
   const color = avatarColors[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % avatarColors.length]
   return (
     <span className={`relative grid shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br ${color} font-display font-bold text-white ring-2 ring-white dark:ring-ink-900 ${size} ${className}`} aria-hidden>
       <span className="text-[0.9em]">{initials}</span>
-      {src && !failed && <img src={src} alt="" loading="lazy" onError={() => setFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
+      {src && !failed && !lite && <img src={src} alt="" loading="lazy" onError={() => setFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
     </span>
   )
 }

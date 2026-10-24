@@ -1,20 +1,34 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, LayoutDashboard, LogOut, Menu, Moon, Search, Sun, X, Info, LifeBuoy, HelpCircle } from 'lucide-react'
+import { ChevronDown, Feather, LayoutDashboard, LogOut, Menu, Moon, Search, Sun, X, Info, LifeBuoy, HelpCircle } from 'lucide-react'
 import { Avatar, Logo } from '../ui'
-import { roleHome, useAuth, useLang, useTheme } from '../../context/AppContext'
-import { modules } from '../../data/modules'
+import { roleHome, useAuth, useLang, useLite, useTheme } from '../../context/AppContext'
+import { learnModules, lifeModules } from '../../data/modules'
 import SearchPalette from './SearchPalette'
 
 const mainLinks = [
   { to: '/', key: 'nav.home', end: true },
-  { to: '/hostels', key: 'nav.hostels' },
-  { to: '/tiffin', key: 'nav.tiffin' },
-  { to: '/colleges', key: 'nav.colleges' },
+  { to: '/skill-bridge', key: 'nav.skillbridge' },
+  { to: '/teacher', key: 'nav.teacher' },
   { to: '/resources', key: 'nav.resources' },
+  { to: '/vocational', key: 'nav.vocational' },
 ]
-const moreModules = modules.filter((m) => !['hostel', 'tiffin', 'college', 'resources'].includes(m.id))
+const inMain = new Set(mainLinks.map((l) => l.to))
+const moreLearn = learnModules.filter((m) => !inMain.has(m.to))
+const moreModules = [...moreLearn, ...lifeModules]
+const descOf = (m, t) => m.desc ?? t(m.key + '.d')
+
+/** Data-saver toggle: hides photos and animations for slow or costly mobile data. */
+export function LiteToggle({ className = '' }) {
+  const { lite, toggleLite } = useLite()
+  const { t } = useLang()
+  return (
+    <button onClick={toggleLite} aria-pressed={lite} title={`${t('nav.lite')}: ${lite ? 'on' : 'off'}`} className={`grid h-9 w-9 place-items-center rounded-full transition ${lite ? 'bg-emerald-500 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'} ${className}`} aria-label={`${t('nav.lite')} (data saver)`}>
+      <Feather className="h-5 w-5" />
+    </button>
+  )
+}
 const extraLinks = [
   { to: '/about', key: 'nav.about', icon: Info },
   { to: '/help', key: 'nav.help', icon: LifeBuoy },
@@ -111,9 +125,9 @@ export default function Navbar() {
     <>
       <header className={`sticky top-0 z-50 border-b transition ${scrolled ? 'border-slate-200/80 bg-white/90 shadow-soft backdrop-blur-lg dark:border-white/10 dark:bg-ink-950/85' : 'border-transparent bg-white dark:bg-ink-950'}`}>
         <div className="container-x flex h-16 items-center justify-between gap-4 lg:h-[72px]">
-          <Logo />
+          <Logo navbar />
 
-          <nav className="hidden items-center gap-5 xl:flex" aria-label="Main">
+          <nav className="hidden items-center gap-4 xl:flex 2xl:gap-6" aria-label="Main">
             {mainLinks.map((l) => (
               <NavLink key={l.to} to={l.to} end={l.end} className={linkClass}>
                 {t(l.key)}
@@ -125,20 +139,28 @@ export default function Navbar() {
               </button>
               <AnimatePresence>
                 {moreOpen && (
-                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="absolute right-0 top-full w-[520px] rounded-2xl border border-slate-200 bg-white p-3 shadow-lift dark:border-white/10 dark:bg-ink-900">
-                    <div className="grid grid-cols-2 gap-1">
-                      {moreModules.map((m) => (
-                        <Link key={m.id} to={m.to} className="flex items-start gap-3 rounded-xl p-3 transition hover:bg-slate-50 dark:hover:bg-white/5">
-                          <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${m.tint}`}>
-                            <m.icon className="h-5 w-5" />
-                          </span>
-                          <span>
-                            <span className="block text-sm font-semibold text-slate-800 dark:text-white">{t(m.key)}</span>
-                            <span className="block text-xs text-slate-500 dark:text-slate-400">{t(m.key + '.d')}</span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="absolute right-0 top-full max-h-[80vh] w-[560px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-lift dark:border-white/10 dark:bg-ink-900">
+                    {[
+                      [t('nav.learn'), moreLearn],
+                      [t('nav.life'), lifeModules],
+                    ].map(([label, list]) => (
+                      <div key={label} className="mb-1">
+                        <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{label}</p>
+                        <div className="grid grid-cols-2 gap-1">
+                          {list.map((m) => (
+                            <Link key={m.id} to={m.to} className="flex items-start gap-3 rounded-xl p-2.5 transition hover:bg-slate-50 dark:hover:bg-white/5">
+                              <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${m.tint}`}>
+                                <m.icon className="h-5 w-5" />
+                              </span>
+                              <span>
+                                <span className="block text-sm font-semibold text-slate-800 dark:text-white">{t(m.key)}</span>
+                                <span className="block text-xs text-slate-500 dark:text-slate-400">{descOf(m, t)}</span>
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                     <div className="mt-2 flex gap-1 border-t border-slate-100 pt-2 dark:border-white/10">
                       {extraLinks.map((l) => (
                         <Link key={l.to} to={l.to} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5">
@@ -154,6 +176,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-1.5 sm:gap-2">
             <LangToggle className="hidden sm:flex" />
+            <LiteToggle className="hidden sm:grid" />
             <ThemeToggle className="hidden sm:grid" />
             <button onClick={() => setSearchOpen(true)} className="group flex h-9 items-center gap-2 rounded-full px-2.5 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" aria-label="Search (Ctrl+K)">
               <Search className="h-5 w-5" />
@@ -219,7 +242,10 @@ export default function Navbar() {
               </div>
               <div className="mb-5 flex items-center justify-between">
                 <LangToggle />
-                <ThemeToggle />
+                <div className="flex items-center gap-1">
+                  <LiteToggle />
+                  <ThemeToggle />
+                </div>
               </div>
               <nav className="flex flex-col gap-1" aria-label="Mobile">
                 {mainLinks.map((l) => (
@@ -228,17 +254,24 @@ export default function Navbar() {
                   </NavLink>
                 ))}
               </nav>
-              <p className="mb-2 mt-5 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{t('nav.more')}</p>
-              <div className="grid grid-cols-2 gap-2">
-                {moreModules.map((m) => (
-                  <Link key={m.id} to={m.to} className="flex items-center gap-2 rounded-xl border border-slate-100 p-2.5 text-xs font-semibold text-slate-700 dark:border-white/10 dark:text-slate-200">
-                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${m.tint}`}>
-                      <m.icon className="h-4 w-4" />
-                    </span>
-                    {t(m.key)}
-                  </Link>
-                ))}
-              </div>
+              {[
+                [t('nav.learn'), moreLearn],
+                [t('nav.life'), lifeModules],
+              ].map(([label, list]) => (
+                <div key={label}>
+                  <p className="mb-2 mt-5 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {list.map((m) => (
+                      <Link key={m.id} to={m.to} className="flex items-center gap-2 rounded-xl border border-slate-100 p-2.5 text-xs font-semibold text-slate-700 dark:border-white/10 dark:text-slate-200">
+                        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${m.tint}`}>
+                          <m.icon className="h-4 w-4" />
+                        </span>
+                        {t(m.key)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
               <div className="mt-4 flex flex-col gap-1">
                 {extraLinks.map((l) => (
                   <Link key={l.to} to={l.to} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-600 dark:text-slate-300">

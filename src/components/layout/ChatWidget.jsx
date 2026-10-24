@@ -9,6 +9,7 @@ const CHAT_ENDPOINT = '/.netlify/functions/chat'
 
 // Pages the assistant may mention; any of these paths in a reply becomes a button.
 const pageLinks = {
+  '/skill-bridge': 'Skill Bridge', '/teacher': 'Teacher Copilot', '/vocational': 'Vocational training', '/class': 'Join a class',
   '/hostels': 'Hostel Finder', '/tiffin': 'Tiffin & Mess', '/connect': 'Local Students', '/colleges': 'Colleges',
   '/resources': 'Study Resources', '/skills': 'Skills & Videos', '/careers': 'Internships & Jobs', '/exams': 'Exams & Quizzes',
   '/scholarships': 'Scholarships', '/library': 'E-Library', '/sidf': 'SIDF', '/signup': 'Create an account', '/help': 'Contact support',
@@ -47,6 +48,9 @@ async function askGemini(history) {
 
 // Offline FAQ answers (fallback).
 const intents = [
+  { match: ['gap', 'career', 'job ready', 'roadmap', 'plan', 'badge'], text: 'Skill Bridge compares your university syllabus with what jobs need, builds a weekly plan for the gaps and lets you earn verified badges.', link: ['/skill-bridge', 'Open Skill Bridge'] },
+  { match: ['teacher', 'lesson', 'question paper', 'class code'], text: 'Teacher Copilot creates lesson plans, question papers and auto-graded quizzes, with a weak-topic heatmap for your class.', link: ['/teacher', 'Open Teacher Copilot'] },
+  { match: ['iti', 'vocational', 'electrician', 'solar', 'repair', 'tally', 'trade'], text: 'Vocational tracks in Hindi and English with verified skill tests and apprenticeship links.', link: ['/vocational', 'Vocational training'] },
   { match: ['hostel', 'pg', 'room', 'stay'], text: 'You can browse verified hostels, PGs and rooms with filters for budget, gender, AC and food.', link: ['/hostels', 'Open Hostel Finder'] },
   { match: ['tiffin', 'food', 'mess', 'khana'], text: 'Find home-style tiffin and mess services by area, price and veg/non-veg.', link: ['/tiffin', 'Open Tiffin Finder'] },
   { match: ['note', 'pyq', 'syllabus', 'paper'], text: 'Study resources are organised as Course → University → Year → Semester → Subject. All academic content is free.', link: ['/resources', 'Open Study Resources'] },
@@ -58,9 +62,9 @@ const intents = [
 ]
 const answer = (q) => {
   const s = q.toLowerCase()
-  return intents.find((i) => i.match.some((m) => s.includes(m))) ?? { text: 'I can help with hostels, tiffin, notes, scholarships, internships, exams and SIDF. You can also reach our team from the Help page.', link: ['/help', 'Contact support'] }
+  return intents.find((i) => i.match.some((m) => s.includes(m))) ?? { text: 'I can help with your skill gap & learning plan, teacher tools, notes, exams, vocational courses, scholarships and internships. You can also reach our team from the Help page.', link: ['/help', 'Contact support'] }
 }
-const suggestions = ['Find a PG near my college', 'Free PYQs', 'Scholarships for girls', 'How to list my hostel?']
+const suggestions = ['What skills do I need for web development?', 'Free PYQs', 'I am a teacher', 'Vocational courses in Hindi']
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false)

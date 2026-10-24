@@ -4,6 +4,11 @@ import { Bookmark, BookOpen, Check, CheckCircle2, ClipboardList, Flag, Graduatio
 import { Avatar, Badge, ChipGroup, EmptyState, SmartImage } from '../components/ui'
 import { DashboardShell, statusTone } from '../components/ui/Dashboard'
 import HostelCard from '../components/hostel/HostelCard'
+import Ring from '../components/ui/Ring'
+import { BadgeCertificate } from '../components/skills/SkillTest'
+import useMyBadges from '../hooks/useMyBadges'
+import usePersistentState from '../hooks/usePersistentState'
+import { buildPlan, computeGap } from '../data/skillbridge'
 import { useData } from '../context/DataContext'
 import { useAuth, useToast } from '../context/AppContext'
 import { cityById, formatINR } from '../data/common'
@@ -16,7 +21,12 @@ import { typeLabel } from '../data/hostels'
 export function StudentDashboard() {
   const { user } = useAuth()
   const { hostels, tiffins, saved, quizHistory, applied, connections, ideas, mentorRequests, toggleApplied } = useData()
-  const [tab, setTab] = useState('saved')
+  const [tab, setTab] = useState('bridge')
+  const badges = useMyBadges()
+  const [bridge] = usePersistentState('ss-skillbridge', null)
+  const gap = bridge ? computeGap({ courseId: bridge.courseId, sem: bridge.sem, roleId: bridge.roleId, ratings: bridge.ratings, badges: badges.map((b) => b.payload.skill) }) : null
+  const plan = gap ? buildPlan(gap, bridge.minutes) : null
+  const planDone = plan ? plan.tasks.filter((x) => bridge.done?.[x.id]).length : 0
   const savedHostels = hostels.filter((h) => saved.hostels.includes(h.id))
   const savedTiffins = tiffins.filter((t) => saved.tiffins.includes(t.id))
   const savedBooks = books.filter((b) => saved.books.includes(b.id))
@@ -35,8 +45,26 @@ export function StudentDashboard() {
         { icon: GraduationCap, label: 'Scholarships applied', value: applied.length, tint: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15' },
       ]}
     >
-      <ChipGroup value={tab} onChange={setTab} options={[{ value: 'saved', label: 'Saved stays & food' }, { value: 'resources', label: 'Bookmarks' }, { value: 'quiz', label: 'Quiz history' }, { value: 'scholarships', label: 'Scholarships' }, { value: 'network', label: 'Network & ideas' }]} />
+      <ChipGroup value={tab} onChange={setTab} options={[{ value: 'bridge', label: `Skill Bridge & badges (${badges.length})` }, { value: 'saved', label: 'Saved stays & food' }, { value: 'resources', label: 'Bookmarks' }, { value: 'quiz', label: 'Quiz history' }, { value: 'scholarships', label: 'Scholarships' }, { value: 'network', label: 'Network & ideas' }]} />
       <div className="mt-5">
+        {tab === 'bridge' && (
+          !gap ? (
+            <EmptyState icon={GraduationCap} title="Find your skill gap" text="Pick your course and dream job to see how job-ready you are and get a personal plan." action={<Link to="/skill-bridge" className="btn-accent">Open Skill Bridge</Link>} />
+          ) : (
+            <div className="space-y-5">
+              <div className="card flex flex-col items-center gap-5 p-5 sm:flex-row">
+                <Ring value={gap.readiness} size={110} stroke={10} />
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-lg font-bold">{gap.role.name}</p>
+                  <p className="text-sm text-slate-500">{gap.course.name} · Semester {bridge.sem} · syllabus alone gives {gap.syllabusFull}% by graduation</p>
+                  <p className="mt-2 text-sm">Plan progress: <b>{planDone}/{plan.tasks.length}</b> tasks · about {plan.totalWeeks} weeks at {bridge.minutes} min/day</p>
+                </div>
+                <Link to="/skill-bridge#plan" className="btn-primary">Continue my plan</Link>
+              </div>
+              {badges.length ? <div className="grid gap-4 lg:grid-cols-2">{badges.map((b) => <BadgeCertificate key={b.token} payload={b.payload} token={b.token} />)}</div> : <p className="card p-5 text-sm text-slate-500">No verified badges yet. <Link to="/skill-bridge#verify" className="link">Take a 5-question skill test</Link></p>}
+            </div>
+          )
+        )}
         {tab === 'saved' && (
           <div className="space-y-6">
             {savedHostels.length ? <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{savedHostels.map((h) => <HostelCard key={h.id} hostel={h} />)}</div> : <EmptyState icon={Heart} title="No saved stays yet" text="Tap the heart on any hostel or PG to save it here." action={<Link to="/hostels" className="btn-primary">Browse stays</Link>} />}

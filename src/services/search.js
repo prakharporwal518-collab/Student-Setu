@@ -9,8 +9,11 @@ import { scholarships } from '../data/scholarships'
 import { books } from '../data/library'
 import { sidfEvents, mentors } from '../data/sidf'
 import { typeLabel } from '../data/hostels'
+import { roles, skills as jobSkills } from '../data/skillbridge'
+import { vocationalTracks } from '../data/vocational'
 
 export const searchGroups = {
+  bridge: 'Skill Bridge', teacher: 'Teacher Copilot', vocational: 'Vocational',
   city: 'Cities', hostel: 'Hostels & PGs', tiffin: 'Tiffin & Mess', college: 'Colleges', student: 'Local Students',
   course: 'Study Resources', skill: 'Skills', job: 'Internships & Jobs', exam: 'Exams', quiz: 'Quizzes',
   scholarship: 'Scholarships', book: 'E-Library', sidf: 'SIDF',
@@ -21,6 +24,11 @@ const cityName = (id) => cities.find((c) => c.id === id)?.name ?? id
 /** Flattens every module into one searchable list. Hostels/tiffins come from live state. */
 export function buildIndex(hostels = [], tiffins = []) {
   return [
+    { type: 'teacher', title: 'Teacher Copilot', subtitle: 'AI lesson plans, question papers, quizzes & class heatmap', to: '/teacher', text: 'teacher lesson plan question paper quiz class heatmap ai' },
+    { type: 'teacher', title: 'Join a class with a code', subtitle: 'Students: open notes and quizzes from your teacher', to: '/class', text: 'class code join quiz notes' },
+    ...roles.map((r) => ({ type: 'bridge', title: `${r.name} — skill gap & plan`, subtitle: r.blurb, to: '/skill-bridge', text: `${r.needs.map((n) => jobSkills[n.id].name).join(' ')} career job role gap` })),
+    ...Object.entries(jobSkills).filter(([, sk]) => sk.badge).map(([id, sk]) => ({ type: 'bridge', title: `${sk.name} verified badge`, subtitle: 'Server-graded skill test', to: '/skill-bridge#verify', text: `${id} badge test certificate` })),
+    ...vocationalTracks.map((v) => ({ type: 'vocational', title: v.name, subtitle: `${v.hi} · ${v.duration}`, to: '/vocational', text: `${v.roles.join(' ')} vocational trade iti` })),
     ...cities.map((c) => ({ type: 'city', title: c.name, subtitle: `${c.state} · ${c.tagline}`, to: `/connect?city=${c.id}`, text: c.areas.join(' ') })),
     ...hostels.filter((h) => h.status === 'approved').map((h) => ({ type: 'hostel', title: h.name, subtitle: `${typeLabel[h.type]} · ${h.area}, ${cityName(h.city)} · ₹${h.rent}/mo`, to: `/hostels/${h.id}`, text: `${h.city} ${h.area} ${h.type} ${h.gender} hostel pg room` })),
     ...tiffins.filter((t) => t.status === 'approved').map((t) => ({ type: 'tiffin', title: t.name, subtitle: `${t.area}, ${cityName(t.city)} · ₹${t.monthly}/mo`, to: `/tiffin?focus=${t.id}`, text: `${t.city} ${t.area} ${t.foodType} tiffin mess food` })),

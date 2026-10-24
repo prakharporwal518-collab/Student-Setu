@@ -1,0 +1,136 @@
+import { unsplash } from './common.js'
+
+const campus = [
+  'photo-1562774053-701939374585',
+  'photo-1541339907198-e08756dedf3f',
+  'photo-1523050854058-8df90110c9f1',
+  'photo-1592280771190-3e2e4d571952',
+  'photo-1607237138185-eedd9c632b0b',
+]
+
+// NOTE: phone numbers are sample data for the demo. Always verify on the official website.
+export const colleges = [
+  {
+    id: 'rgpv', name: 'Rajiv Gandhi Proudyogiki Vishwavidyalaya', short: 'RGPV', city: 'bhopal', state: 'Madhya Pradesh',
+    area: 'Airport Bypass Road, Gandhi Nagar', type: 'State Government', established: 1998, naac: 'A',
+    website: 'https://www.rgpv.ac.in', phone: '0755-2678xxx', email: 'info@rgpv.ac.in',
+    courses: ['B.Tech', 'M.Tech', 'MCA', 'B.Pharm', 'MBA'], hostel: true, rating: 4.2, students: 1200,
+    lat: 23.3089, lng: 77.3621, image: unsplash(campus[0]),
+    about: 'State technological university of Madhya Pradesh affiliating 200+ engineering, pharmacy and management colleges.',
+  },
+  {
+    id: 'manit', name: 'Maulana Azad National Institute of Technology', short: 'MANIT', city: 'bhopal', state: 'Madhya Pradesh',
+    area: 'Link Road No. 3, Near Kali Mata Mandir', type: 'Central Government (NIT)', established: 1960, naac: 'A',
+    website: 'https://www.manit.ac.in', phone: '0755-4051xxx', email: 'registrar@manit.ac.in',
+    courses: ['B.Tech', 'B.Arch', 'M.Tech', 'MCA', 'MBA', 'PhD'], hostel: true, rating: 4.5, students: 860,
+    lat: 23.2156, lng: 77.4077, image: unsplash(campus[1]),
+    about: 'One of the premier National Institutes of Technology with a lush 650-acre campus beside Upper Lake.',
+  },
+  {
+    id: 'lnct', name: 'Lakshmi Narain College of Technology', short: 'LNCT', city: 'bhopal', state: 'Madhya Pradesh',
+    area: 'Raisen Road, Kalchuri Nagar', type: 'Private', established: 1994, naac: 'A',
+    website: 'https://lnct.ac.in', phone: '0755-6185xxx', email: 'info@lnct.ac.in',
+    courses: ['B.Tech', 'BBA', 'MBA', 'MCA', 'B.Pharm'], hostel: true, rating: 4.0, students: 640,
+    lat: 23.2510, lng: 77.5250, image: unsplash(campus[2]),
+    about: 'Large private engineering and management group in Central India, affiliated to RGPV.',
+  },
+  {
+    id: 'aiims-bhopal', name: 'All India Institute of Medical Sciences, Bhopal', short: 'AIIMS Bhopal', city: 'bhopal', state: 'Madhya Pradesh',
+    area: 'Saket Nagar', type: 'Central Government', established: 2012, naac: '—',
+    website: 'https://aiimsbhopal.edu.in', phone: '0755-2672xxx', email: 'info@aiimsbhopal.edu.in',
+    courses: ['MBBS', 'B.Sc Nursing', 'MD/MS'], hostel: true, rating: 4.6, students: 210,
+    lat: 23.2085, lng: 77.4600, image: unsplash(campus[3]),
+    about: 'Institute of national importance offering medical education, research and tertiary healthcare.',
+  },
+  {
+    id: 'davv', name: 'Devi Ahilya Vishwavidyalaya', short: 'DAVV', city: 'indore', state: 'Madhya Pradesh',
+    area: 'Takshashila Campus, Khandwa Road', type: 'State Government', established: 1964, naac: 'A+',
+    website: 'https://www.dauniv.ac.in', phone: '0731-2527xxx', email: 'registrar@dauniv.ac.in',
+    courses: ['B.Sc', 'B.Com', 'BBA', 'BA', 'B.Tech', 'MBA', 'MCA'], hostel: true, rating: 4.3, students: 980,
+    lat: 22.6865, lng: 75.8714, image: unsplash(campus[4]),
+    about: 'NAAC A+ state university known for IMS, IET and School of Computer Science.',
+  },
+  {
+    id: 'iit-indore', name: 'Indian Institute of Technology Indore', short: 'IIT Indore', city: 'indore', state: 'Madhya Pradesh',
+    area: 'Simrol, Khandwa Road', type: 'Central Government (IIT)', established: 2009, naac: '—',
+    website: 'https://www.iiti.ac.in', phone: '0731-6603xxx', email: 'info@iiti.ac.in',
+    courses: ['B.Tech', 'M.Tech', 'M.Sc', 'PhD'], hostel: true, rating: 4.7, students: 320,
+    lat: 22.5204, lng: 75.9207, image: unsplash(campus[0]),
+    about: 'Fully residential IIT with a growing research ecosystem and active startup culture.',
+  },
+  {
+    id: 'sgsits', name: 'Shri G. S. Institute of Technology & Science', short: 'SGSITS', city: 'indore', state: 'Madhya Pradesh',
+    area: 'Park Road, Sanghi Colony', type: 'Government Aided', established: 1952, naac: 'A',
+    website: 'https://www.sgsits.ac.in', phone: '0731-2582xxx', email: 'director@sgsits.ac.in',
+    courses: ['B.Tech', 'M.Tech', 'MCA', 'B.Pharm'], hostel: true, rating: 4.3, students: 410,
+    lat: 22.7245, lng: 75.8710, image: unsplash(campus[1]),
+    about: 'One of the oldest engineering institutes of Central India with a strong alumni network.',
+  },
+  {
+    id: 'du', name: 'University of Delhi', short: 'DU', city: 'delhi', state: 'Delhi',
+    area: 'North Campus, Delhi', type: 'Central University', established: 1922, naac: 'A++',
+    website: 'https://www.du.ac.in', phone: '011-2766xxxx', email: 'registrar@du.ac.in',
+    courses: ['BA', 'B.Com', 'B.Sc', 'BBA', 'MA', 'M.Com', 'M.Sc'], hostel: true, rating: 4.6, students: 3100,
+    lat: 28.6889, lng: 77.2100, image: unsplash(campus[2]),
+    about: 'India’s leading central university with 90+ constituent colleges across North and South Campus.',
+  },
+  {
+    id: 'dtu', name: 'Delhi Technological University', short: 'DTU', city: 'delhi', state: 'Delhi',
+    area: 'Shahbad Daulatpur, Bawana Road', type: 'State Government', established: 1941, naac: 'A',
+    website: 'https://dtu.ac.in', phone: '011-2787xxxx', email: 'registrar@dtu.ac.in',
+    courses: ['B.Tech', 'BBA', 'M.Tech', 'MBA'], hostel: true, rating: 4.5, students: 1250,
+    lat: 28.7501, lng: 77.1177, image: unsplash(campus[3]),
+    about: 'Formerly Delhi College of Engineering — renowned for placements and technical societies.',
+  },
+  {
+    id: 'mnit', name: 'Malaviya National Institute of Technology', short: 'MNIT Jaipur', city: 'jaipur', state: 'Rajasthan',
+    area: 'JLN Marg, Malviya Nagar', type: 'Central Government (NIT)', established: 1963, naac: '—',
+    website: 'https://www.mnit.ac.in', phone: '0141-2529xxx', email: 'registrar@mnit.ac.in',
+    courses: ['B.Tech', 'B.Arch', 'M.Tech', 'MBA', 'PhD'], hostel: true, rating: 4.5, students: 720,
+    lat: 26.8640, lng: 75.8108, image: unsplash(campus[4]),
+    about: 'National Institute of Technology in the Pink City, known for its incubation centre.',
+  },
+  {
+    id: 'uniraj', name: 'University of Rajasthan', short: 'Uniraj', city: 'jaipur', state: 'Rajasthan',
+    area: 'JLN Marg', type: 'State Government', established: 1947, naac: 'A+',
+    website: 'https://www.uniraj.ac.in', phone: '0141-2711xxx', email: 'registrar@uniraj.ac.in',
+    courses: ['BA', 'B.Sc', 'B.Com', 'MA', 'M.Sc'], hostel: true, rating: 4.1, students: 860,
+    lat: 26.8880, lng: 75.8180, image: unsplash(campus[0]),
+    about: 'The oldest university of Rajasthan offering arts, science, commerce and law programmes.',
+  },
+  {
+    id: 'lu', name: 'University of Lucknow', short: 'Lucknow University', city: 'lucknow', state: 'Uttar Pradesh',
+    area: 'Badshah Bagh, University Road', type: 'State Government', established: 1920, naac: 'A++',
+    website: 'https://www.lkouniv.ac.in', phone: '0522-2740xxx', email: 'registrar@lkouniv.ac.in',
+    courses: ['BA', 'B.Sc', 'B.Com', 'BBA', 'LLB', 'MA'], hostel: true, rating: 4.2, students: 1100,
+    lat: 26.8650, lng: 80.9390, image: unsplash(campus[1]),
+    about: 'Centenary university with a heritage campus on the banks of the Gomti river.',
+  },
+  {
+    id: 'aktu', name: 'Dr. A.P.J. Abdul Kalam Technical University', short: 'AKTU', city: 'lucknow', state: 'Uttar Pradesh',
+    area: 'Sector 11, Jankipuram Vistar', type: 'State Government', established: 2000, naac: '—',
+    website: 'https://aktu.ac.in', phone: '0522-2772xxx', email: 'info@aktu.ac.in',
+    courses: ['B.Tech', 'MBA', 'MCA', 'B.Pharm'], hostel: false, rating: 3.9, students: 900,
+    lat: 26.9200, lng: 80.9440, image: unsplash(campus[2]),
+    about: 'Affiliating technical university of Uttar Pradesh with 700+ colleges.',
+  },
+  {
+    id: 'vnit', name: 'Visvesvaraya National Institute of Technology', short: 'VNIT', city: 'nagpur', state: 'Maharashtra',
+    area: 'South Ambazari Road', type: 'Central Government (NIT)', established: 1960, naac: '—',
+    website: 'https://vnit.ac.in', phone: '0712-2801xxx', email: 'registrar@vnit.ac.in',
+    courses: ['B.Tech', 'B.Arch', 'M.Tech', 'PhD'], hostel: true, rating: 4.5, students: 540,
+    lat: 21.1250, lng: 79.0510, image: unsplash(campus[3]),
+    about: 'NIT located in the heart of Nagpur with a 215-acre green campus.',
+  },
+  {
+    id: 'rtmnu', name: 'Rashtrasant Tukadoji Maharaj Nagpur University', short: 'RTMNU', city: 'nagpur', state: 'Maharashtra',
+    area: 'Ravindranath Tagore Marg, Civil Lines', type: 'State Government', established: 1923, naac: 'A',
+    website: 'https://www.nagpuruniversity.ac.in', phone: '0712-2525xxx', email: 'registrar@nagpuruniversity.ac.in',
+    courses: ['BA', 'B.Com', 'B.Sc', 'BBA', 'LLB'], hostel: true, rating: 4.0, students: 700,
+    lat: 21.1490, lng: 79.0720, image: unsplash(campus[4]),
+    about: 'One of the oldest universities of Maharashtra serving Vidarbha region.',
+  },
+]
+
+export const collegeById = (id) => colleges.find((c) => c.id === id)
+export const allCourses = ['B.Tech', 'MBBS', 'B.Sc', 'B.Com', 'BBA', 'BA', 'MBA', 'MCA', 'M.Tech', 'B.Pharm', 'LLB']

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, BadgeCheck, Building2, FileText, Home, MapPin, Quote, Search, Users, UserRoundSearch, Handshake } from 'lucide-react'
-import { Avatar, LinkArrow, Reveal, Stars } from '../ui'
+import { ArrowRight, Building2, CircleCheck, FileText, Home, MapPin, Quote, Search, Users } from 'lucide-react'
+import { Avatar, LinkArrow, Reveal, SmartImage, Stars } from '../ui'
 import { CityArt, HeroArt } from '../ui/Illustrations'
 import { useLang } from '../../context/AppContext'
 import { modules } from '../../data/modules'
-import { cities } from '../../data/common'
+import { cities, unsplashPhoto } from '../../data/common'
 import { testimonials } from '../../data/community'
 import useCountUp from '../../hooks/useCountUp'
 
@@ -17,28 +17,43 @@ const popular = [
   { label: 'Internships', to: '/careers' },
   { label: 'Scholarships', to: '/scholarships' },
 ]
+// Free Unsplash photos, tried in order; the illustrated skyline shows if none load.
+const heroPhotos = ['wcgdaj0PjyE', 'GtOnvlzB_wk'].map((id) => unsplashPhoto(id, 1920))
 
 export function Hero() {
   const { t } = useLang()
   const navigate = useNavigate()
   const [q, setQ] = useState('')
+  const [photo, setPhoto] = useState(0)
+  const [photoLoaded, setPhotoLoaded] = useState(false)
   const submit = (e) => {
     e.preventDefault()
     navigate(q.trim() ? `/search?q=${encodeURIComponent(q.trim())}` : '/search')
   }
   return (
     <section className="relative isolate overflow-hidden bg-brand-950">
-      <HeroArt className="absolute inset-0 -z-20 h-full w-full" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-950 via-brand-950/85 to-brand-950/0 sm:via-brand-950/70" />
+      <HeroArt className="absolute inset-0 -z-30 h-full w-full" />
+      {photo < heroPhotos.length && (
+        <img
+          key={photo}
+          src={heroPhotos[photo]}
+          alt=""
+          fetchpriority="high"
+          onLoad={() => setPhotoLoaded(true)}
+          onError={() => setPhoto((p) => p + 1)}
+          className={`absolute inset-0 -z-20 h-full w-full object-cover object-[70%_center] transition-opacity duration-700 ${photoLoaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900 via-brand-900/80 to-brand-900/0 sm:via-brand-900/60" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-brand-950/60 to-transparent" />
 
-      <motion.div initial={{ opacity: 0, rotate: -8, y: -10 }} animate={{ opacity: 1, rotate: -8, y: 0 }} transition={{ delay: 0.6 }} className="pointer-events-none absolute right-6 top-8 hidden text-right font-hand text-3xl font-bold leading-[1.05] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.35)] md:block lg:right-16 lg:text-4xl">
+      <motion.div initial={{ opacity: 0, rotate: -8, y: -10 }} animate={{ opacity: 1, rotate: -8, y: 0 }} transition={{ delay: 0.6 }} className={`pointer-events-none absolute right-6 top-8 hidden text-right font-hand text-3xl font-bold leading-[1.05] md:block lg:right-16 lg:text-4xl ${photoLoaded ? 'text-brand-950 [text-shadow:0_1px_10px_rgba(255,255,255,.7)]' : 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.35)]'}`}>
         <p>{t('hero.hand1')}</p>
         <p>{t('hero.hand2')}</p>
         <p className="relative inline-block">
           {t('hero.hand3')}
           <svg viewBox="0 0 160 14" className="absolute -bottom-3 left-0 w-full" aria-hidden>
-            <path d="M2 10 Q60 0 158 6" fill="none" stroke="#fb923c" strokeWidth="3" strokeLinecap="round" />
+            <path d="M2 10 Q60 0 158 6" fill="none" stroke={photoLoaded ? '#1c2c7a' : '#fb923c'} strokeWidth="3" strokeLinecap="round" />
           </svg>
         </p>
       </motion.div>
@@ -81,37 +96,34 @@ export function Hero() {
 }
 
 /* ---------------------------------------------------------- Module cards */
+/** Lucide icon drawn filled with white details, like the reference design. */
+export function SolidIcon({ icon: Icon, className = 'h-7 w-7' }) {
+  return <Icon className={className} fill="currentColor" stroke="white" strokeWidth={1.6} />
+}
+
 export function ModuleCards() {
   const { t } = useLang()
-  const primary = modules.slice(0, 8)
-  const extra = modules.slice(8)
   return (
     <section className="container-x pt-8 sm:pt-10">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-8">
-        {primary.map((m, i) => (
+        {modules.slice(0, 8).map((m, i) => (
           <Reveal key={m.id} delay={i * 0.04}>
             <Link to={m.to} className="card card-hover group flex h-full flex-col items-center px-3 py-5 text-center">
-              <span className={`grid h-14 w-14 place-items-center rounded-full ${m.tint} transition group-hover:scale-110`}>
-                <m.icon className="h-7 w-7" strokeWidth={2.2} />
+              <span className={`grid h-14 w-14 place-items-center rounded-full transition group-hover:scale-110 ${m.badge ? 'bg-saffron-50 dark:bg-saffron-500/15' : m.tint}`}>
+                {m.badge ? (
+                  <span className={`grid h-10 w-10 place-items-center rounded-full shadow-sm ${m.badge}`}>
+                    <m.icon className="h-5 w-5" strokeWidth={2.4} />
+                  </span>
+                ) : m.solid ? (
+                  <SolidIcon icon={m.icon} className="h-8 w-8" />
+                ) : (
+                  <m.icon className="h-7 w-7" strokeWidth={2.2} />
+                )}
               </span>
-              <span className="mt-3 text-sm font-bold text-slate-900 dark:text-white">{t(m.key)}</span>
+              <span className="mt-3 text-sm font-bold text-brand-950 dark:text-white">{t(m.key)}</span>
               <span className="mt-1 text-xs leading-snug text-slate-500 dark:text-slate-400">{t(m.key + '.d')}</span>
             </Link>
           </Reveal>
-        ))}
-      </div>
-      <div className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4">
-        {extra.map((m) => (
-          <Link key={m.id} to={m.to} className="card card-hover group flex items-center gap-3 px-4 py-3">
-            <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${m.tint}`}>
-              <m.icon className="h-5 w-5" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-bold text-slate-900 dark:text-white">{t(m.key)}</span>
-              <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{t(m.key + '.d')}</span>
-            </span>
-            <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-1 group-hover:text-saffron-500" />
-          </Link>
         ))}
       </div>
     </section>
@@ -124,7 +136,7 @@ function Stat({ icon: Icon, end, label }) {
   return (
     <div ref={ref} className="flex items-center gap-4">
       <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white text-brand-800 shadow-soft dark:bg-white/10 dark:text-brand-200">
-        <Icon className="h-6 w-6" />
+        <SolidIcon icon={Icon} className="h-7 w-7" />
       </span>
       <div>
         <p className="font-display text-2xl font-extrabold text-brand-950 dark:text-white sm:text-3xl">{value.toLocaleString('en-IN')}+</p>
@@ -152,9 +164,9 @@ export function Stats() {
 export function HowItWorks() {
   const { t } = useLang()
   const steps = [
-    { icon: UserRoundSearch, title: t('how.1'), text: t('how.1d') },
-    { icon: Handshake, title: t('how.2'), text: t('how.2d') },
-    { icon: BadgeCheck, title: t('how.3'), text: t('how.3d') },
+    { icon: Search, title: t('how.1'), text: t('how.1d') },
+    { icon: Users, title: t('how.2'), text: t('how.2d'), solid: true },
+    { icon: CircleCheck, title: t('how.3'), text: t('how.3d'), solid: true },
   ]
   return (
     <section className="container-x section text-center">
@@ -165,7 +177,7 @@ export function HowItWorks() {
           <div key={s.title} className="contents">
             <Reveal delay={i * 0.12} className="flex items-center gap-4 text-left md:justify-center">
               <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-800 ring-8 ring-brand-50/50 dark:bg-white/10 dark:text-brand-200 dark:ring-white/5">
-                <s.icon className="h-7 w-7" strokeWidth={2.4} />
+                {s.solid ? <SolidIcon icon={s.icon} className="h-8 w-8" /> : <s.icon className="h-7 w-7" strokeWidth={2.8} />}
               </span>
               <div>
                 <p className="font-display text-lg font-bold text-brand-950 dark:text-white">
@@ -205,7 +217,7 @@ export function Testimonials() {
         {list.map((r, i) => (
           <Reveal key={r.name} delay={i * 0.06} className="w-[85%] shrink-0 snap-start md:w-auto">
             <figure className="card card-hover flex h-full gap-4 p-5">
-              <Avatar name={r.name} size="h-14 w-14 text-lg" />
+              <Avatar name={r.name} src={r.photo && unsplashPhoto(r.photo, 160)} size="h-14 w-14 text-lg" />
               <div>
                 <figcaption>
                   <p className="font-bold text-slate-900 dark:text-white">{r.name}</p>
@@ -244,7 +256,12 @@ export function FeaturedCities() {
           <Reveal key={c.id} delay={i * 0.05}>
             <Link to={`/connect?city=${c.id}`} className="card card-hover group block overflow-hidden">
               <div className="overflow-hidden">
-                <CityArt palette={c.palette} landmark={c.landmark} seed={i + 3} className="aspect-[16/9] w-full transition duration-500 group-hover:scale-105" />
+                <SmartImage
+                  srcs={c.photos.map((id) => unsplashPhoto(id, 600))}
+                  alt={`${c.name} — ${c.tagline}`}
+                  fallback={<CityArt palette={c.palette} landmark={c.landmark} seed={i + 3} className="h-full w-full" />}
+                  className="aspect-[16/9] w-full transition duration-500 group-hover:scale-105"
+                />
               </div>
               <div className="px-3 py-2.5">
                 <p className="font-bold text-slate-900 dark:text-white">{c.name}</p>

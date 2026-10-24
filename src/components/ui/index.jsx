@@ -24,15 +24,22 @@ export function Logo({ light = false, compact = false }) {
 }
 
 /* ---------------------------------------------------------- SmartImage */
-/** Image with a graceful illustrated fallback when the URL fails. */
-export function SmartImage({ src, alt, className = '', fallbackLabel, icon: Icon = ImageOff }) {
-  const [failed, setFailed] = useState(!src)
+/**
+ * Image with graceful fallbacks: tries `src`, then each of `srcs`, then shows `fallback`
+ * (or a branded placeholder) — so a missing photo never looks broken.
+ */
+export function SmartImage({ src, srcs, alt, className = '', fallbackLabel, icon: Icon = ImageOff, fallback, imgClassName = '' }) {
+  const list = [src, ...(srcs ?? [])].filter(Boolean)
+  const key = list.join('|')
+  const [index, setIndex] = useState(0)
   const [loaded, setLoaded] = useState(false)
   useEffect(() => {
-    setFailed(!src)
+    setIndex(0)
     setLoaded(false)
-  }, [src])
-  if (failed) {
+  }, [key])
+  const current = list[index]
+  if (!current) {
+    if (fallback) return <div className={`relative overflow-hidden ${className}`}>{fallback}</div>
     return (
       <div className={`grid place-items-center bg-gradient-to-br from-brand-100 via-brand-50 to-saffron-100 text-brand-700 dark:from-brand-900 dark:via-ink-900 dark:to-saffron-700/30 dark:text-brand-200 ${className}`} role="img" aria-label={alt}>
         <div className="flex flex-col items-center gap-1 p-2 text-center">
@@ -44,14 +51,18 @@ export function SmartImage({ src, alt, className = '', fallbackLabel, icon: Icon
   }
   return (
     <div className={`relative overflow-hidden bg-slate-200 dark:bg-white/5 ${className}`}>
-      {!loaded && <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-white/5 dark:via-white/10 dark:to-white/5" />}
+      {!loaded && (fallback ? <div className="absolute inset-0">{fallback}</div> : <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-white/5 dark:via-white/10 dark:to-white/5" />)}
       <img
-        src={src}
+        key={current}
+        src={current}
         alt={alt}
         loading="lazy"
         onLoad={() => setLoaded(true)}
-        onError={() => setFailed(true)}
-        className={`h-full w-full object-cover transition duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        onError={() => {
+          setLoaded(false)
+          setIndex((i) => i + 1)
+        }}
+        className={`relative h-full w-full object-cover transition duration-500 ${loaded ? 'opacity-100' : 'opacity-0'} ${imgClassName}`}
       />
     </div>
   )
@@ -117,12 +128,14 @@ export function Stars({ value = 5, onChange, size = 'h-4 w-4' }) {
 
 /* -------------------------------------------------------------- Avatar */
 const avatarColors = ['from-brand-500 to-indigo-700', 'from-saffron-400 to-rose-500', 'from-emerald-400 to-teal-600', 'from-violet-500 to-fuchsia-600', 'from-sky-400 to-blue-600', 'from-amber-400 to-orange-600']
-export function Avatar({ name = '?', size = 'h-12 w-12', className = '' }) {
+export function Avatar({ name = '?', size = 'h-12 w-12', className = '', src }) {
+  const [failed, setFailed] = useState(false)
   const initials = name.replace(/^(Dr\.|Mr\.|Mrs\.)\s*/i, '').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
   const color = avatarColors[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % avatarColors.length]
   return (
-    <span className={`grid shrink-0 place-items-center rounded-full bg-gradient-to-br ${color} font-display font-bold text-white ring-2 ring-white dark:ring-ink-900 ${size} ${className}`} aria-hidden>
+    <span className={`relative grid shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br ${color} font-display font-bold text-white ring-2 ring-white dark:ring-ink-900 ${size} ${className}`} aria-hidden>
       <span className="text-[0.9em]">{initials}</span>
+      {src && !failed && <img src={src} alt="" loading="lazy" onError={() => setFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
     </span>
   )
 }

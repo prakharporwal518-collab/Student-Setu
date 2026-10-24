@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Instagram, Linkedin, Mail, MapPin, Phone, Send, Youtube } from 'lucide-react'
+import { Instagram, Linkedin, Send, Youtube } from 'lucide-react'
 import { useLang, useTheme } from '../../context/AppContext'
 
 const XIcon = (props) => (
@@ -21,7 +20,6 @@ const socials = [
 export default function Footer() {
   const { t } = useLang()
   const { theme, toggle } = useTheme()
-  const [subscribed, setSubscribed] = useState(false)
   const cols = [
     {
       title: t('footer.quick'),
@@ -60,8 +58,8 @@ export default function Footer() {
   return (
     <footer className="relative mt-auto overflow-hidden bg-brand-950 text-slate-300">
       <div className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-saffron-500/10 blur-3xl" />
-      <div className="container-x relative grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
-        <div>
+      <div className="container-x relative grid grid-cols-2 gap-8 py-10 sm:grid-cols-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+        <div className="col-span-2 sm:col-span-3 lg:col-span-1">
           <Link to="/" className="flex items-center gap-3">
             <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/10">
               <svg viewBox="0 0 64 64" className="h-8 w-8" aria-hidden>
@@ -76,17 +74,11 @@ export default function Footer() {
               <span className="text-xs text-slate-400">{t('tagline')}</span>
             </span>
           </Link>
-          <p className="mt-4 max-w-xs text-sm text-slate-400">One platform for stay, food, colleges, study material, careers and innovation — built by students, for students.</p>
-          <ul className="mt-4 space-y-2 text-sm text-slate-400">
-            <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-saffron-400" /> Bhopal, Madhya Pradesh</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-saffron-400" /> hello@studentsetu.in</li>
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-saffron-400" /> Helpline: Mon–Sat, 10 AM – 6 PM</li>
-          </ul>
         </div>
         {cols.map((c) => (
           <div key={c.title}>
             <h4 className="mb-3 text-sm font-semibold text-white">{c.title}</h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-1.5 text-xs sm:text-sm">
               {c.links.map(([to, label]) => (
                 <li key={to}>
                   <Link to={to} className="text-slate-400 transition hover:text-saffron-400">
@@ -99,28 +91,13 @@ export default function Footer() {
         ))}
         <div>
           <h4 className="mb-3 text-sm font-semibold text-white">{t('footer.follow')}</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 lg:flex-nowrap">
             {socials.map(({ label, icon: Icon, href }) => (
-              <a key={label} href={href} aria-label={label} className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition hover:-translate-y-0.5 hover:bg-saffron-500">
+              <a key={label} href={href} aria-label={label} className="grid h-9 w-9 place-items-center rounded-full text-white transition hover:-translate-y-0.5 hover:bg-saffron-500">
                 <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
-          <form
-            className="mt-5"
-            onSubmit={(e) => {
-              e.preventDefault()
-              e.currentTarget.reset()
-              setSubscribed(true)
-            }}
-          >
-            <label className="mb-2 block text-xs text-slate-400" htmlFor="newsletter">Monthly scholarships & internships in your inbox</label>
-            <div className="flex overflow-hidden rounded-xl bg-white/10 ring-1 ring-white/10 focus-within:ring-saffron-400">
-              <input id="newsletter" type="email" required placeholder="you@college.edu" className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none" />
-              <button className="bg-saffron-500 px-3 text-sm font-semibold text-white hover:bg-saffron-600">Join</button>
-            </div>
-            <p className="mt-1.5 text-xs text-emerald-400" aria-live="polite">{subscribed && 'Subscribed! We’ll send monthly opportunities.'}</p>
-          </form>
         </div>
       </div>
       <div className="border-t border-white/10">

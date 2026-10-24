@@ -85,9 +85,9 @@ export const communities = [
 ]
 
 export const testimonials = [
-  { name: 'Ananya Sharma', meta: 'B.Tech, RGPV', rating: 5, text: 'Student Setu helped me find a safe and affordable PG near my college. The local student community is also very helpful!' },
-  { name: 'Rohit Verma', meta: 'B.Sc, DAVV', rating: 5, text: 'The tiffin service I found here is amazing. Home-style food and on time delivery. Highly recommended!' },
-  { name: 'Sneha Patel', meta: 'BBA, LNCT', rating: 5, text: 'The study resources and college info section is super useful. Everything I need is in one place.' },
-  { name: 'Aarav Gupta', meta: 'B.Tech, DTU', rating: 5, text: 'Got my first internship through the year-wise guidance. The roadmap for 2nd years is gold.' },
+  { name: 'Ananya Sharma', photo: 'KxHcyNOIO_M', meta: 'B.Tech, RGPV', rating: 5, text: 'Student Setu helped me find a safe and affordable PG near my college. The local student community is also very helpful!' },
+  { name: 'Rohit Verma', photo: 'Y_fmOp3Gnu0', meta: 'B.Sc, DAVV', rating: 5, text: 'The tiffin service I found here is amazing. Home-style food and on time delivery. Highly recommended!' },
+  { name: 'Sneha Patel', photo: 'ekzJvt0xFGw', meta: 'BBA, LNCT', rating: 5, text: 'The study resources and college info section is super useful. Everything I need is in one place.' },
+  { name: 'Aarav Gupta', photo: '5VOlFFnVG1Q', meta: 'B.Tech, DTU', rating: 5, text: 'Got my first internship through the year-wise guidance. The roadmap for 2nd years is gold.' },
   { name: 'Pooja Ahirwar', meta: 'BA, Bhopal', rating: 5, text: 'I didn’t know government hostels existed for students like me. I now save over ₹60,000 every year.' },
 ]

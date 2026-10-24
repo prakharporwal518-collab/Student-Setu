@@ -1,9 +1,51 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { MessageCircle, Send, X } from 'lucide-react'
+import { MessageCircle, Send, Sparkles, X } from 'lucide-react'
 
-// Lightweight FAQ helper bot. Swap `answer()` for a real AI/helpdesk API later.
+// Gemini answers via the Netlify Function in netlify/functions/chat.mts (the API key stays on the server).
+// If it is unavailable — no key configured, local `npm run dev`, network error — the FAQ answers below are used.
+const CHAT_ENDPOINT = '/.netlify/functions/chat'
+
+// Pages the assistant may mention; any of these paths in a reply becomes a button.
+const pageLinks = {
+  '/hostels': 'Hostel Finder', '/tiffin': 'Tiffin & Mess', '/connect': 'Local Students', '/colleges': 'Colleges',
+  '/resources': 'Study Resources', '/skills': 'Skills & Videos', '/careers': 'Internships & Jobs', '/exams': 'Exams & Quizzes',
+  '/scholarships': 'Scholarships', '/library': 'E-Library', '/sidf': 'SIDF', '/signup': 'Create an account', '/help': 'Contact support',
+}
+const linksIn = (text) =>
+  Object.entries(pageLinks)
+    .filter(([path]) => new RegExp(`(^|[\\s(*"'])${path}(?![\\w/-])`).test(text))
+    .slice(0, 2)
+
+/** Renders **bold** and "- " / "* " bullet lines from the model's reply. */
+function RichText({ text }) {
+  const bold = (line, key) =>
+    line.split(/(\*\*[^*]+\*\*)/g).map((part, i) => (part.startsWith('**') && part.endsWith('**') ? <b key={`${key}-${i}`}>{part.slice(2, -2)}</b> : part))
+  return text.split('\n').map((line, i) => {
+    const bullet = /^\s*[-*•]\s+/.test(line)
+    const clean = line.replace(/^\s*[-*•]\s+/, '')
+    if (!clean.trim()) return <span key={i} className="block h-1.5" />
+    return bullet ? (
+      <span key={i} className="flex gap-1.5"><span aria-hidden>•</span><span>{bold(clean, i)}</span></span>
+    ) : (
+      <span key={i} className="block">{bold(clean, i)}</span>
+    )
+  })
+}
+
+async function askGemini(history) {
+  const res = await fetch(CHAT_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: history.map(({ from, text }) => ({ from, text })) }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || !data.reply) throw new Error(data.error || `HTTP ${res.status}`)
+  return data.reply
+}
+
+// Offline FAQ answers (fallback).
 const intents = [
   { match: ['hostel', 'pg', 'room', 'stay'], text: 'You can browse verified hostels, PGs and rooms with filters for budget, gender, AC and food.', link: ['/hostels', 'Open Hostel Finder'] },
   { match: ['tiffin', 'food', 'mess', 'khana'], text: 'Find home-style tiffin and mess services by area, price and veg/non-veg.', link: ['/tiffin', 'Open Tiffin Finder'] },
@@ -24,14 +66,29 @@ export default function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [msgs, setMsgs] = useState([{ from: 'bot', text: 'Namaste! 👋 I’m Setu Saathi. What are you looking for today?' }])
+  const [loading, setLoading] = useState(false)
   const endRef = useRef(null)
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [msgs, open])
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [msgs, open, loading])
 
-  const send = (text) => {
-    if (!text.trim()) return
-    const a = answer(text)
-    setMsgs((m) => [...m, { from: 'me', text }, { from: 'bot', text: a.text, link: a.link }])
+
+  const send = async (raw) => {
+    const text = raw.trim()
+    if (!text || loading) return
+    const history = [...msgs, { from: 'me', text }]
+    setMsgs(history)
     setInput('')
+    setLoading(true)
+    try {
+      const reply = await askGemini(history)
+      setMsgs((m) => [...m, { from: 'bot', text: reply, ai: true, links: linksIn(reply) }])
+    } catch {
+      const a = answer(text)
+      setMsgs((m) => [...m, { from: 'bot', text: a.text, links: [a.link] }])
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -42,7 +99,7 @@ export default function ChatWidget() {
             <div className="flex items-center justify-between bg-brand-800 px-4 py-3 text-white">
               <div>
                 <p className="font-display font-bold">Setu Saathi</p>
-                <p className="text-xs text-brand-200">Usually replies instantly</p>
+                <p className="flex items-center gap-1 text-xs text-brand-200"><Sparkles className="h-3 w-3" /> AI assistant · powered by Gemini</p>
               </div>
               <button onClick={() => setOpen(false)} aria-label="Close chat" className="rounded-lg p-1 hover:bg-white/10">
                 <X className="h-5 w-5" />
@@ -52,15 +109,24 @@ export default function ChatWidget() {
               {msgs.map((m, i) => (
                 <div key={i} className={`flex ${m.from === 'me' ? 'justify-end' : ''}`}>
                   <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm ${m.from === 'me' ? 'rounded-br-sm bg-brand-800 text-white' : 'rounded-bl-sm bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'}`}>
-                    {m.text}
-                    {m.link && (
-                      <Link to={m.link[0]} onClick={() => setOpen(false)} className="mt-1.5 block font-semibold text-saffron-600 dark:text-saffron-400">
-                        {m.link[1]} →
+                    {m.from === 'bot' ? <RichText text={m.text} /> : m.text}
+                    {m.links?.map(([to, label]) => (
+                      <Link key={to} to={to} onClick={() => setOpen(false)} className="mt-1.5 block font-semibold text-saffron-600 dark:text-saffron-400">
+                        {label} →
                       </Link>
-                    )}
+                    ))}
                   </div>
                 </div>
               ))}
+              {loading && (
+                <div className="flex" role="status" aria-label="Setu Saathi is typing">
+                  <div className="flex gap-1 rounded-2xl rounded-bl-sm bg-slate-100 px-4 py-3 dark:bg-white/10">
+                    {[0, 1, 2].map((d) => (
+                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: `${d * 0.15}s` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
               {msgs.length === 1 && (
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((s) => (
@@ -79,8 +145,8 @@ export default function ChatWidget() {
               }}
               className="flex items-center gap-2 border-t border-slate-100 p-3 dark:border-white/10"
             >
-              <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your question…" className="input py-2" aria-label="Message" />
-              <button className="btn-accent h-10 w-10 shrink-0 p-0" aria-label="Send">
+              <input value={input} onChange={(e) => setInput(e.target.value)} maxLength={1000} placeholder="Ask in English or Hindi…" className="input py-2" aria-label="Message" />
+              <button disabled={loading || !input.trim()} className="btn-accent h-10 w-10 shrink-0 p-0" aria-label="Send">
                 <Send className="h-4 w-4" />
               </button>
             </form>

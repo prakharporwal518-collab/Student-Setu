@@ -20,6 +20,7 @@
     "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
+    "@netlify/functions": "^6.0.3",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.6.1",
     "postcss": "^8.5.31",

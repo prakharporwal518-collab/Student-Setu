@@ -68,6 +68,25 @@ src/
 server/              Optional Express REST API using the same data
 ```
 
+## 🤖 Gemini AI assistant (Setu Saathi)
+
+The help chat (bottom-right) uses **Google Gemini** through a Netlify Function (`netlify/functions/chat.mts`). The API key stays on the server and is never sent to the browser.
+
+1. Create a key at https://aistudio.google.com/apikey
+2. In Netlify go to **Project configuration → Environment variables → Add a variable**:
+
+| Key | Value | Required |
+| --- | --- | --- |
+| `GEMINI_API_KEY` | your key | ✅ |
+| `GEMINI_MODEL` | e.g. `gemini-2.5-flash` (default) | optional |
+
+   Keep the scope set to include **Functions**, and mark the key as a secret.
+3. **Trigger a redeploy.** Netlify only picks up environment variables on the next deploy.
+
+> ⚠️ Never name it `VITE_GEMINI_API_KEY`. Anything starting with `VITE_` is bundled into the public JavaScript.
+
+Without a key, or when running plain `npm run dev`, the chat falls back to built-in FAQ answers. To test Gemini locally, install the [Netlify CLI](https://docs.netlify.com/cli/get-started/) and run `netlify dev` with `GEMINI_API_KEY` in a `.env` file.
+
 ## 🔌 Backend
 
 The app runs without a backend. To use the bundled API:

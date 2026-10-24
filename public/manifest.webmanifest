@@ -1,0 +1,15 @@
+{
+  "name": "Student Setu — Learn, Skill up, Get hired",
+  "short_name": "Student Setu",
+  "description": "Personalised learning from your university syllabus to a real job, AI tools for teachers, vocational skills and free study resources.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1c2c7a",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

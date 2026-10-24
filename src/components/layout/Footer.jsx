@@ -22,24 +22,33 @@ export default function Footer() {
   const { theme, toggle } = useTheme()
   const cols = [
     {
-      title: t('footer.quick'),
+      title: t('nav.learn'),
       links: [
-        ['/', t('nav.home')],
-        ['/hostels', t('nav.hostels')],
-        ['/tiffin', t('nav.tiffin')],
-        ['/colleges', t('mod.college')],
-        ['/connect', t('nav.connect')],
+        ['/skill-bridge', t('nav.skillbridge')],
+        ['/teacher', t('nav.teacher')],
+        ['/vocational', t('mod.vocational')],
+        ['/resources', t('nav.resources')],
+        ['/skills', t('nav.skills')],
+        ['/class', t('nav.joinClass')],
       ],
     },
     {
       title: t('footer.resources'),
       links: [
-        ['/resources', t('nav.resources')],
-        ['/skills', t('nav.skills')],
-        ['/careers', t('nav.careers')],
         ['/exams', t('nav.exams')],
         ['/scholarships', t('nav.scholarships')],
         ['/library', t('nav.library')],
+        ['/careers', t('nav.careers')],
+        ['/sidf', 'SIDF'],
+      ],
+    },
+    {
+      title: t('nav.life'),
+      links: [
+        ['/hostels', t('nav.hostels')],
+        ['/tiffin', t('nav.tiffin')],
+        ['/connect', t('nav.connect')],
+        ['/colleges', t('mod.college')],
       ],
     },
     {
@@ -48,9 +57,6 @@ export default function Footer() {
         ['/faq', t('nav.faq')],
         ['/help', t('nav.help')],
         ['/about', t('nav.about')],
-        ['/sidf', 'SIDF'],
-        ['/owner', 'List your property'],
-        ['/provider', 'List your tiffin service'],
       ],
     },
   ]
@@ -58,7 +64,7 @@ export default function Footer() {
   return (
     <footer className="relative mt-auto overflow-hidden bg-brand-950 text-slate-300">
       <div className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-saffron-500/10 blur-3xl" />
-      <div className="container-x relative grid grid-cols-2 gap-8 py-10 sm:grid-cols-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+      <div className="container-x relative grid grid-cols-2 gap-8 py-10 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr_1fr]">
         <div className="col-span-2 sm:col-span-3 lg:col-span-1">
           <Link to="/" className="flex items-center gap-3">
             <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/10">

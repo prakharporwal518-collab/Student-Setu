@@ -1,29 +1,20 @@
 # 🎓 Student Setu — *Bridging Students, Building Futures*
 
-India's one-stop student network. Students moving to a new city get genuine guidance from local students, and everything about student life sits on one platform: stays, food, colleges, study material, exams, internships, jobs, scholarships, an e-library, and startup mentorship (SIDF).
+**An AI-powered learning and skills platform for Bharat.** It gives students a personalised path from their university syllabus to a real job. Teachers in government and local colleges get an AI teaching assistant. Vocational learners get trade skills in Hindi. Everything works on slow internet.
 
-Built with **React 18 + Vite + Tailwind CSS + Framer Motion + Lucide**. It runs fully on dummy data, and a small **Express** API is included for when you want a backend.
+> Problem statement: *platforms and tools that enhance access to quality education, empower teachers and develop skills — covering remote learning, personalised education, vocational training and bridging the skills gap.*
 
----
-
-## ✨ Features
-
-| Module | What works |
+| Problem-statement keyword | How Student Setu answers it |
 | --- | --- |
-| **Home** | Hero with global search, quick-access cards for all modules, animated stats, How it works, embedded Hostel Finder, testimonials, featured cities |
-| **Hostel & Stay Finder** | College / government / private hostels, PGs and rent rooms · filters for city, nearby college, budget (two-handle slider), gender, room type, AC, food and distance · sorting · save (♥) · detail page with gallery, facilities, rules, map, seat availability, yearly savings vs. private-college hostels, reviews, visit requests |
-| **Owner portal** (`/owner`) | Register, add/edit/delete listings, update seats, rent and facilities. New listings stay hidden until an admin approves them |
-| **Tiffin & Mess** | Filter by city, area, price, veg/non-veg and free trial · weekly menu, reviews · **provider portal** (`/provider`) to manage menu, price and delivery areas |
-| **Connect with Local Students** | State → City → Area → College search, verified profiles, Connect requests, city WhatsApp/Telegram communities, area guides written by students |
-| **College Directory** | Search by state, city and course · college page with map, official website and contact, courses, hostel availability, nearby stays and tiffin, students from that college |
-| **Study Resources** | Course → University → Year → Semester → Subject drill-down · notes, syllabus, PYQs, reference links · bookmarks · contribute notes |
-| **Skills & Videos** | Roadmaps, free courses, curated videos, **Premium** badge and placeholder pricing |
-| **Internships & Jobs** | Year-wise guidance (1st → final year), listings that always credit and link to the original source, trusted programs |
-| **Exams & Quizzes** | GATE, UPSC, SSC, banking, state PSCs, CAT, NEET PG · syllabus and PYQs · **free quizzes**: no registration, timer, instant score with explanations |
-| **Scholarships** | Government and private · filter by course, state, category, marks and family income · track applications |
-| **E-Library** | Legally shareable content only (NCERT, OpenStax, NPTEL, public domain, permitted student notes) · licence shown on every item · **Report content** |
-| **SIDF** | Events in government/local colleges, mentor requests, hackathon prep hub, pitch-deck tips, team-formation board, idea submission with instant feedback |
-| **Common** | Login/Signup (email + Google) with role selection · student, owner, provider, mentor and admin dashboards · verified badges · ratings everywhere · Help, About, FAQ, Privacy, Terms · **light/dark mode** · **English/हिंदी** · **Ctrl/⌘ + K global search** · help-chat assistant |
+| **Bridging the skills gap** | **Setu Skill Bridge: Curriculum-to-Career Gap Map.** It compares the real syllabus (Course → University → Semester) with what 13 job roles need across 45 skills. It shows *"your syllabus covers X% by graduation"* and the gap skill by skill. |
+| **Personalised education** | A **week-by-week learning plan** built from your biggest gaps and your daily study time, using free courses. Self-ratings and finished projects update your readiness score live, and Gemini adds **AI coach tips**. |
+| **Skill development** | **Verified Skill Badges**: 5-question tests graded **on the server** (the answers never reach the browser) and HMAC-signed. Anyone can check one at `/verify/<token>`, and edited badges are rejected. There are 15 skills, including trades. |
+| **Empowering teachers** | **Teacher Copilot**: AI lesson plans and question papers from the syllabus in **English or Hindi**, a quiz builder (AI or manual), **auto-graded class quizzes** students join with a code, a **weak-topic heatmap**, one-click **re-teach lessons** and shared notes. |
+| **Remote learning** | **Lite mode** (no photos or animations for 2G/3G), an **offline-ready installable app** (service worker + manifest), **listen-aloud** text-to-speech for plans, lessons and notes, **WhatsApp sharing**, and the whole site in **Hindi**. |
+| **Vocational training** | 7 trade tracks (electrician, mobile repair, solar PV, Tally & GST, digital marketing, office assistant, tailoring) with Hindi modules, verified tests and links to Skill India, Apprenticeship India and ITI. |
+| **Access to quality education** | Free notes, PYQs and syllabus, free quizzes, an e-library of legally shareable books, scholarships, internships, SIDF mentorship and peer tutors (seniors teach juniors). |
+
+**Student life support (optional):** hostel/PG finder with an owner portal, tiffin finder with a provider portal, local-student connect and a college directory. These remove the non-academic barriers that stop small-town students from accessing quality education.
 
 ## 🚀 Getting started
 
@@ -43,10 +34,18 @@ Use the one-click buttons on the Login page, or log in with password **`demo123`
 | Student | `student@demo.in` | `/dashboard` |
 | Hostel owner | `owner@demo.in` | `/owner` |
 | Tiffin provider | `provider@demo.in` | `/provider` |
+| Teacher | `teacher@demo.in` | `/teacher` |
 | Mentor | `mentor@demo.in` | `/mentor` |
 | Admin | `admin@demo.in` | `/admin` |
 
-**Try the full flow:** log in as owner → add a listing → log in as admin → approve it → it now shows in the Hostel Finder with a Verified badge.
+**Demo flow for judges (3 minutes):**
+1. `/skill-bridge`: pick B.Tech · RGPV · Sem 5 · Web Developer. The gap map shows the syllabus covers 26% by graduation.
+2. Rate a few skills. Readiness rises and the plan re-sizes when you change the daily time. Click **Get my coach tips**.
+3. **Get verified** on HTML & CSS, then open the badge's verify link.
+4. `/teacher`: create a lesson plan (try हिंदी), click **Make a quiz on this**, generate questions, and **Assign** to a new class.
+5. On a phone, open `/class` and enter the code. The teacher sees the result and heatmap under **Classes & insights**. **Try a demo class** shows 26 students.
+
+**Owner flow:** log in as owner → add a listing → log in as admin → approve it → it now shows in the Hostel Finder with a Verified badge.
 
 Your changes are saved in the browser (localStorage). Use **Admin → Reset demo data** to start over.
 
@@ -65,6 +64,11 @@ src/
 ├── i18n/            English + Hindi strings
 ├── pages/           One file per module / page (lazy-loaded)
 └── services/        api.js (backend switch) · search.js (global search index)
+├── shared/          classroom.js — grading & heatmap logic used by both server and browser
+netlify/
+├── functions/       chat (help bot) · copilot (Gemini JSON) · badge (graded + signed) · classroom (Blobs)
+└── lib/             gemini helper · server-only badge question bank · classroom handler
+public/sw.js         Offline service worker · manifest.webmanifest — installable app
 server/              Optional Express REST API using the same data
 ```
 
@@ -86,6 +90,18 @@ The help chat (bottom-right) uses **Google Gemini** through a Netlify Function (
 > ⚠️ Never name it `VITE_GEMINI_API_KEY`. Anything starting with `VITE_` is bundled into the public JavaScript.
 
 Without a key, or when running plain `npm run dev`, the chat falls back to built-in FAQ answers. To test Gemini locally, install the [Netlify CLI](https://docs.netlify.com/cli/get-started/) and run `netlify dev` with `GEMINI_API_KEY` in a `.env` file.
+
+## 🔐 Environment variables (Netlify)
+
+Set these in **Netlify → Project configuration → Environment variables** (scope must include **Functions**), then redeploy:
+
+| Key | Needed for | Required |
+| --- | --- | --- |
+| `GEMINI_API_KEY` | Help chat, Teacher Copilot, AI coach | Recommended. Without it, Copilot uses built-in templates. |
+| `GEMINI_MODEL` | Choose the model (default `gemini-2.5-flash`) | Optional |
+| `BADGE_SECRET` | Signing Verified Skill Badges (any long random text) | Recommended. Without it, badges use a public demo key and are marked "demo". |
+
+Class quizzes and notes are stored in **Netlify Blobs**, which needs no setup. When the functions aren't reachable (plain `npm run dev`), classes are saved in the browser and badge tests show a message. Use `netlify dev` to run everything locally.
 
 ## 🔌 Backend
 

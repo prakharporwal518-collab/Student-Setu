@@ -1,21 +1,22 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Building2, CircleCheck, FileText, Home, MapPin, Quote, Search, Users } from 'lucide-react'
+import { ArrowRight, Building2, CircleCheck, FileText, MapPin, Presentation, Quote, Route, Search, Users } from 'lucide-react'
 import { Avatar, LinkArrow, Reveal, SmartImage, Stars } from '../ui'
 import { CityArt, HeroArt } from '../ui/Illustrations'
-import { useLang } from '../../context/AppContext'
-import { modules } from '../../data/modules'
+import { useLang, useLite } from '../../context/AppContext'
+import { learnModules } from '../../data/modules'
+import { skills as jobSkills } from '../../data/skillbridge'
 import { cities, unsplashPhoto } from '../../data/common'
 import { testimonials } from '../../data/community'
 import useCountUp from '../../hooks/useCountUp'
 
 /* ------------------------------------------------------------------ Hero */
 const popular = [
-  { label: 'Hostel in Delhi', to: '/hostels?city=delhi' },
+  { label: 'Web developer skill gap', to: '/skill-bridge' },
   { label: 'B.Tech Notes', to: '/resources?course=btech' },
-  { label: 'Internships', to: '/careers' },
-  { label: 'Scholarships', to: '/scholarships' },
+  { label: 'AI lesson plan', to: '/teacher' },
+  { label: 'Vocational courses', to: '/vocational' },
 ]
 // Free Unsplash photos, tried in order; the illustrated skyline shows if none load.
 const heroPhotos = ['wcgdaj0PjyE', 'GtOnvlzB_wk'].map((id) => unsplashPhoto(id, 1920))
@@ -26,6 +27,7 @@ export function Hero() {
   const [q, setQ] = useState('')
   const [photo, setPhoto] = useState(0)
   const [photoLoaded, setPhotoLoaded] = useState(false)
+  const { lite } = useLite()
   const submit = (e) => {
     e.preventDefault()
     navigate(q.trim() ? `/search?q=${encodeURIComponent(q.trim())}` : '/search')
@@ -33,7 +35,7 @@ export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-brand-950">
       <HeroArt className="absolute inset-0 -z-30 h-full w-full" />
-      {photo < heroPhotos.length && (
+      {!lite && photo < heroPhotos.length && (
         <img
           key={photo}
           src={heroPhotos[photo]}
@@ -47,13 +49,13 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900 via-brand-900/80 to-brand-900/0 sm:via-brand-900/60" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-brand-950/60 to-transparent" />
 
-      <motion.div initial={{ opacity: 0, rotate: -8, y: -10 }} animate={{ opacity: 1, rotate: -8, y: 0 }} transition={{ delay: 0.6 }} className={`pointer-events-none absolute right-6 top-8 hidden text-right font-hand text-3xl font-bold leading-[1.05] md:block lg:right-16 lg:text-4xl ${photoLoaded ? 'text-brand-950 [text-shadow:0_1px_10px_rgba(255,255,255,.7)]' : 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.35)]'}`}>
+      <motion.div initial={{ opacity: 0, rotate: -8, y: -10 }} animate={{ opacity: 1, rotate: -8, y: 0 }} transition={{ delay: 0.6 }} className={`pointer-events-none absolute right-6 top-8 hidden text-right font-hand text-3xl font-bold leading-[1.05] md:block lg:right-16 lg:text-4xl ${photoLoaded && !lite ? 'text-brand-950 [text-shadow:0_1px_10px_rgba(255,255,255,.7)]' : 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.35)]'}`}>
         <p>{t('hero.hand1')}</p>
         <p>{t('hero.hand2')}</p>
         <p className="relative inline-block">
           {t('hero.hand3')}
           <svg viewBox="0 0 160 14" className="absolute -bottom-3 left-0 w-full" aria-hidden>
-            <path d="M2 10 Q60 0 158 6" fill="none" stroke={photoLoaded ? '#1c2c7a' : '#fb923c'} strokeWidth="3" strokeLinecap="round" />
+            <path d="M2 10 Q60 0 158 6" fill="none" stroke={photoLoaded && !lite ? '#1c2c7a' : '#fb923c'} strokeWidth="3" strokeLinecap="round" />
           </svg>
         </p>
       </motion.div>
@@ -89,6 +91,10 @@ export function Hero() {
               </Link>
             ))}
           </motion.div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.42 }} className="mt-6 flex flex-wrap gap-3">
+            <Link to="/skill-bridge" className="btn-accent"><Route className="h-4 w-4" /> {t('hero.cta1')}</Link>
+            <Link to="/teacher" className="btn border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20"><Presentation className="h-4 w-4" /> {t('hero.cta2')}</Link>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -106,7 +112,7 @@ export function ModuleCards() {
   return (
     <section className="container-x pt-8 sm:pt-10">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-8">
-        {modules.slice(0, 8).map((m, i) => (
+        {learnModules.slice(0, 8).map((m, i) => (
           <Reveal key={m.id} delay={i * 0.04}>
             <Link to={m.to} className="card card-hover group flex h-full flex-col items-center px-3 py-5 text-center">
               <span className={`grid h-14 w-14 place-items-center rounded-full transition group-hover:scale-110 ${m.badge ? 'bg-saffron-50 dark:bg-saffron-500/15' : m.tint}`}>
@@ -151,9 +157,9 @@ export function Stats() {
   return (
     <section className="container-x pt-8 sm:pt-10">
       <div className="grid grid-cols-1 gap-6 rounded-3xl bg-brand-50 px-6 py-7 ring-1 ring-brand-100 dark:bg-white/5 dark:ring-white/10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
-        <Stat icon={Users} end={50000} label={t('stats.students')} />
-        <Stat icon={Building2} end={5000} label={t('stats.hostels')} />
-        <Stat icon={Home} end={1200} label={t('stats.colleges')} />
+        <Stat icon={Users} end={50000} label={t('stats.learners')} />
+        <Stat icon={Route} end={Object.keys(jobSkills).length} label={t('stats.skills')} />
+        <Stat icon={Building2} end={1200} label={t('stats.colleges')} />
         <Stat icon={FileText} end={10000} label={t('stats.resources')} />
       </div>
     </section>

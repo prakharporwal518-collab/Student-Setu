@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 import usePersistentState from '../hooks/usePersistentState'
 import { translations } from '../i18n/translations'
@@ -20,6 +20,35 @@ function ThemeProvider({ children }) {
   }, [theme])
   const toggle = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), [])
   return <ThemeCtx.Provider value={{ theme, toggle }}>{children}</ThemeCtx.Provider>
+}
+
+/* -------------------------------------------------- Lite mode + offline */
+// Lite mode = data saver for slow or expensive mobile data: no photos, no animations.
+const LiteCtx = createContext(null)
+export const useLite = () => useContext(LiteCtx)
+
+function LiteProvider({ children }) {
+  const [lite, setLite] = usePersistentState('ss-lite', false)
+  const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
+  useEffect(() => {
+    document.documentElement.classList.toggle('lite', lite)
+  }, [lite])
+  useEffect(() => {
+    const up = () => setOnline(true)
+    const down = () => setOnline(false)
+    window.addEventListener('online', up)
+    window.addEventListener('offline', down)
+    return () => {
+      window.removeEventListener('online', up)
+      window.removeEventListener('offline', down)
+    }
+  }, [])
+  const toggleLite = useCallback(() => setLite((v) => !v), [setLite])
+  return (
+    <LiteCtx.Provider value={{ lite, toggleLite, online }}>
+      <MotionConfig reducedMotion={lite ? 'always' : 'user'}>{children}</MotionConfig>
+    </LiteCtx.Provider>
+  )
 }
 
 /* --------------------------------------------------------------- Language */
@@ -92,6 +121,7 @@ export const roles = [
   { id: 'student', label: 'Student', home: '/dashboard' },
   { id: 'owner', label: 'Hostel Owner', home: '/owner' },
   { id: 'provider', label: 'Tiffin Provider', home: '/provider' },
+  { id: 'teacher', label: 'Teacher', home: '/teacher' },
   { id: 'mentor', label: 'Mentor', home: '/mentor' },
   { id: 'admin', label: 'Admin', home: '/admin' },
 ]
@@ -101,12 +131,17 @@ export const demoUsers = [
   { id: 'u-student', name: 'Ananya Sharma', email: 'student@demo.in', password: 'demo123', role: 'student', city: 'bhopal', college: 'rgpv' },
   { id: 'u-owner', name: 'Ramesh Yadav', email: 'owner@demo.in', password: 'demo123', role: 'owner', city: 'bhopal' },
   { id: 'u-provider', name: 'Kamla Devi', email: 'provider@demo.in', password: 'demo123', role: 'provider', city: 'bhopal' },
+  { id: 'u-teacher', name: 'Prof. Meena Joshi', email: 'teacher@demo.in', password: 'demo123', role: 'teacher', city: 'bhopal' },
   { id: 'u-mentor', name: 'Dr. Kavita Rao', email: 'mentor@demo.in', password: 'demo123', role: 'mentor', city: 'bhopal' },
   { id: 'u-admin', name: 'Admin', email: 'admin@demo.in', password: 'demo123', role: 'admin', city: 'bhopal' },
 ]
 
 function AuthProvider({ children }) {
   const [users, setUsers] = usePersistentState('ss-users', demoUsers)
+  // Visitors from before the teacher role was added: make sure every demo account exists.
+  useEffect(() => {
+    if (demoUsers.some((d) => !users.some((u) => u.id === d.id))) setUsers((us) => [...us, ...demoUsers.filter((d) => !us.some((u) => u.id === d.id))])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [user, setUser] = usePersistentState('ss-user', null)
 
   const login = useCallback(
@@ -149,11 +184,13 @@ function AuthProvider({ children }) {
 export function AppProviders({ children }) {
   return (
     <ThemeProvider>
-      <LangProvider>
-        <ToastProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </ToastProvider>
-      </LangProvider>
+      <LiteProvider>
+        <LangProvider>
+          <ToastProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </ToastProvider>
+        </LangProvider>
+      </LiteProvider>
     </ThemeProvider>
   )
 }

@@ -3,7 +3,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ChatWidget from './ChatWidget'
-import { useAuth } from '../../context/AppContext'
+import { WifiOff } from 'lucide-react'
+import { useAuth, useLang, useLite } from '../../context/AppContext'
 
 export function PageLoader() {
   return (
@@ -33,6 +34,17 @@ function ScrollManager() {
   return null
 }
 
+function OfflineBanner() {
+  const { online } = useLite()
+  const { t } = useLang()
+  if (online) return null
+  return (
+    <div className="flex items-center justify-center gap-2 bg-amber-400 px-4 py-1.5 text-center text-xs font-semibold text-amber-950" role="status">
+      <WifiOff className="h-4 w-4" /> {t('offline.banner')}
+    </div>
+  )
+}
+
 export default function Layout() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -40,6 +52,7 @@ export default function Layout() {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2">
         Skip to content
       </a>
+      <OfflineBanner />
       <Navbar />
       <main id="main" className="flex-1">
         <Suspense fallback={<PageLoader />}>

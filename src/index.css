@@ -122,3 +122,29 @@
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
 }
+
+/* Lite mode: fewer effects for slow phones and expensive data */
+.lite *,
+.lite *::before,
+.lite *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+  backdrop-filter: none !important;
+}
+.lite .blur-3xl {
+  display: none;
+}
+
+/* Printing lesson plans and question papers */
+@media print {
+  header, footer, nav, .no-print, [aria-label='Open help chat'], [aria-label='Close help chat'] {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+}

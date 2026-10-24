@@ -6,13 +6,17 @@ import { useData } from '../../context/DataContext'
 import { useLang, useToast } from '../../context/AppContext'
 import { colleges } from '../../data/colleges'
 import { facilityList, typeLabel } from '../../data/hostels'
-import { formatINR } from '../../data/common'
+import { formatINR, unsplashPhoto } from '../../data/common'
 
 export const facilityIcons = {
   wifi: Wifi, meals: Utensils, mess: UtensilsCrossed, laundry: WashingMachine, security: ShieldCheck, ac: AirVent,
   power: Zap, water: Droplets, study: BookOpen, gym: Dumbbell, cctv: Camera, parking: Car,
 }
 export const facilityName = (id) => facilityList.find((f) => f.id === id)?.label ?? id
+// Free building photos used if a listing's own photo fails to load.
+const backupPhotos = ['gEySCQFjRdk', 'XFvXYsrWqAw']
+export const backupPhotoFor = (id) => unsplashPhoto(backupPhotos[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % backupPhotos.length], 900)
+
 export const mapsUrl = (lat, lng) => `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
 
 const genderLabel = { boys: 'Boys', girls: 'Girls', coed: 'Co-ed' }
@@ -34,7 +38,7 @@ export default function HostelCard({ hostel: h, index = 0 }) {
       className="card card-hover group relative flex flex-col overflow-hidden"
     >
       <Link to={`/hostels/${h.id}`} className="relative block" aria-label={`View ${h.name}`}>
-        <SmartImage src={h.images?.[0]} alt={h.name} fallbackLabel={h.name} icon={BedDouble} className="aspect-[16/9] w-full transition duration-500 group-hover:scale-[1.03]" />
+        <SmartImage src={h.images?.[0]} srcs={[backupPhotoFor(h.id)]} alt={h.name} fallbackLabel={h.name} icon={BedDouble} className="aspect-[16/9] w-full transition duration-500 group-hover:scale-[1.03]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
         {h.verified && <VerifiedPill className="absolute bottom-2.5 left-2.5" />}
         <span className="absolute left-2.5 top-2.5 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-slate-700 shadow-sm backdrop-blur dark:bg-ink-900/80 dark:text-slate-200">{genderLabel[h.gender]}</span>

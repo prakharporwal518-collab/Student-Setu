@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Building2, CircleCheck, FileText, MapPin, Presentation, Quote, Route, Search, Users } from 'lucide-react'
+import { ArrowRight, Briefcase, Building2, CircleCheck, FileText, GraduationCap, MapPin, Presentation, Quote, Route, School, Search, Users } from 'lucide-react'
 import { Avatar, LinkArrow, Reveal, SmartImage, Stars } from '../ui'
 import { CityArt, HeroArt } from '../ui/Illustrations'
 import { useLang, useLite } from '../../context/AppContext'
@@ -130,6 +130,32 @@ export function ModuleCards() {
               <span className="mt-1 text-xs leading-snug text-slate-500 dark:text-slate-400">{t(m.key + '.d')}</span>
             </Link>
           </Reveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/* ----------------------------------------------------- Who are you? */
+const stagesUi = [
+  { icon: School, title: 'School student', text: 'Class 12 subjects → every course, entrance exam & roadmap', to: '/pathways', cta: 'Find my courses', tone: 'from-sky-500 to-indigo-600' },
+  { icon: GraduationCap, title: 'College student', text: 'Syllabus vs job gap, a personal plan & verified skill badges', to: '/skill-bridge', cta: 'Find my skill gap', tone: 'from-saffron-400 to-saffron-600' },
+  { icon: Briefcase, title: 'Graduate', text: 'Update your profile and get jobs matched to your degree', to: '/careers', cta: 'See matched jobs', tone: 'from-emerald-500 to-teal-600' },
+]
+export function StageChooser() {
+  return (
+    <section className="container-x pt-10" aria-labelledby="stage-title">
+      <h2 id="stage-title" className="text-center font-display text-2xl font-extrabold text-brand-950 dark:text-white">From study to job — where are you today?</h2>
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
+        {stagesUi.map((st) => (
+          <Link key={st.title} to={st.to} className="card card-hover group flex items-start gap-4 p-5">
+            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-white ${st.tone}`}><st.icon className="h-6 w-6" /></span>
+            <span>
+              <span className="block font-bold text-brand-950 dark:text-white">I’m a {st.title.toLowerCase()}</span>
+              <span className="mt-1 block text-sm text-slate-500 dark:text-slate-400">{st.text}</span>
+              <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-700 group-hover:gap-2 dark:text-brand-300">{st.cta} <ArrowRight className="h-4 w-4" /></span>
+            </span>
+          </Link>
         ))}
       </div>
     </section>

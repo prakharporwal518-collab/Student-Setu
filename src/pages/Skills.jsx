@@ -5,7 +5,9 @@ import { Binary, Brain, Calculator, Check, Cloud, Code2, ExternalLink, MessageCi
 const Icons = { Binary, Brain, Calculator, Cloud, Code2, MessageCircle, Network, Palette }
 import { Badge, PageHeader, PremiumBadge, SectionHeader } from '../components/ui'
 import { useToast } from '../context/AppContext'
-import { premiumCourses, pricingPlans, skillCategories } from '../data/skills'
+import { aiCourses, premiumCourses, pricingPlans, skillCategories } from '../data/skills'
+import Leaderboard from '../components/skills/Leaderboard'
+import PromptLab from '../components/skills/PromptLab'
 
 export default function Skills() {
   const [params, setParams] = useSearchParams()
@@ -16,8 +18,29 @@ export default function Skills() {
 
   return (
     <>
-      <PageHeader icon={PlayCircle} kicker="Skills & Video Learning" title="Learn skills that get you hired" subtitle="Step-by-step roadmaps, hand-picked free courses and the best educational videos — plus premium live programs." crumbs={[{ label: 'Skills' }]} />
+      <PageHeader icon={PlayCircle} kicker="Skills Hub · AI courses, roadmaps & videos" title="Learn skills that get you hired" subtitle="Step-by-step roadmaps, hand-picked free courses and the best educational videos — plus premium live programs." crumbs={[{ label: 'Skills' }]} />
       <div className="container-x py-8">
+        <section className="mb-12 grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+          <div className="space-y-6">
+            <div className="card p-5 sm:p-6" id="ai-courses">
+              <h2 className="flex items-center gap-2 text-xl font-bold"><Brain className="h-5 w-5 text-fuchsia-600" /> AI Skill Courses</h2>
+              <p className="mt-1 text-sm text-slate-500">Free, world-class AI courses — then practise hands-on right here in the Prompt Lab.</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {aiCourses.map((c) => (
+                  <a key={c.title} href={c.url} target="_blank" rel="noreferrer" className="group flex flex-col rounded-xl border border-slate-100 p-3 transition hover:border-fuchsia-300 hover:bg-fuchsia-50/40 dark:border-white/10 dark:hover:bg-white/5">
+                    <span className="flex items-start justify-between gap-2"><span className="text-sm font-bold group-hover:text-fuchsia-700 dark:group-hover:text-fuchsia-300">{c.title}</span><ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" /></span>
+                    <span className="mt-1 text-xs text-slate-500">{c.provider} · {c.level} · ~{c.hours} h</span>
+                    <span className="mt-2"><Badge tone="green">Free</Badge></span>
+                  </a>
+                ))}
+              </div>
+            </div>
+            <PromptLab />
+          </div>
+          <Leaderboard />
+        </section>
+
+        <SectionHeader icon={Sparkles} title="Skill roadmaps & videos" subtitle="Pick a track for a step-by-step roadmap, free courses and the best videos." />
         <div className="no-scrollbar -mx-4 mb-6 flex gap-3 overflow-x-auto px-4 pb-2">
           {skillCategories.map((c) => {
             const Icon = Icons[c.icon] ?? Sparkles

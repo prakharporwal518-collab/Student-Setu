@@ -11,9 +11,11 @@ import { sidfEvents, mentors } from '../data/sidf'
 import { typeLabel } from '../data/hostels'
 import { roles, skills as jobSkills } from '../data/skillbridge'
 import { vocationalTracks } from '../data/vocational'
+import { exams as entranceExams, pathwayCourses } from '../data/pathways'
+import { alternatives } from '../data/counseling'
 
 export const searchGroups = {
-  bridge: 'Skill Bridge', teacher: 'Teacher Copilot', vocational: 'Vocational',
+  bridge: 'Skill Bridge', teacher: 'Teacher Copilot', pathway: 'After 12th', counsel: 'Counseling', vocational: 'Vocational',
   city: 'Cities', hostel: 'Hostels & PGs', tiffin: 'Tiffin & Mess', college: 'Colleges', student: 'Local Students',
   course: 'Study Resources', skill: 'Skills', job: 'Internships & Jobs', exam: 'Exams', quiz: 'Quizzes',
   scholarship: 'Scholarships', book: 'E-Library', sidf: 'SIDF',
@@ -28,6 +30,9 @@ export function buildIndex(hostels = [], tiffins = []) {
     { type: 'teacher', title: 'Join a class with a code', subtitle: 'Students: open notes and quizzes from your teacher', to: '/class', text: 'class code join quiz notes' },
     ...roles.map((r) => ({ type: 'bridge', title: `${r.name} — skill gap & plan`, subtitle: r.blurb, to: '/skill-bridge', text: `${r.needs.map((n) => jobSkills[n.id].name).join(' ')} career job role gap` })),
     ...Object.entries(jobSkills).filter(([, sk]) => sk.badge).map(([id, sk]) => ({ type: 'bridge', title: `${sk.name} verified badge`, subtitle: 'Server-graded skill test', to: '/skill-bridge#verify', text: `${id} badge test certificate` })),
+    ...pathwayCourses.map((c) => ({ type: 'pathway', title: `${c.name} after Class 12`, subtitle: `${c.duration} · ${c.exams.map((e) => entranceExams[e].name).join(', ')}`, to: `/pathways?course=${c.id}`, text: `${c.field} ${c.careers.join(' ')} entrance exam 12th school` })),
+    ...Object.entries(alternatives).map(([id, a]) => ({ type: 'counsel', title: `Alternatives if ${a.exam} doesn't go well`, subtitle: a.headline, to: `/counseling?exam=${id}`, text: `${a.options.map((o) => o.name).join(' ')} counselling plan b drop year cut-off` })),
+    { type: 'counsel', title: 'Talk to an expert counsellor', subtitle: 'Free sessions · Tele-MANAS 14416 for urgent support', to: '/counseling', text: 'counselling mental health stress support helpline' },
     ...vocationalTracks.map((v) => ({ type: 'vocational', title: v.name, subtitle: `${v.hi} · ${v.duration}`, to: '/vocational', text: `${v.roles.join(' ')} vocational trade iti` })),
     ...cities.map((c) => ({ type: 'city', title: c.name, subtitle: `${c.state} · ${c.tagline}`, to: `/connect?city=${c.id}`, text: c.areas.join(' ') })),
     ...hostels.filter((h) => h.status === 'approved').map((h) => ({ type: 'hostel', title: h.name, subtitle: `${typeLabel[h.type]} · ${h.area}, ${cityName(h.city)} · ₹${h.rent}/mo`, to: `/hostels/${h.id}`, text: `${h.city} ${h.area} ${h.type} ${h.gender} hostel pg room` })),

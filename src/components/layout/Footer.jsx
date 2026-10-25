@@ -26,6 +26,7 @@ export default function Footer() {
       links: [
         ['/skill-bridge', t('nav.skillbridge')],
         ['/teacher', t('nav.teacher')],
+        ['/pathways', t('mod.pathways')],
         ['/vocational', t('mod.vocational')],
         ['/resources', t('nav.resources')],
         ['/skills', t('nav.skills')],
@@ -39,6 +40,7 @@ export default function Footer() {
         ['/scholarships', t('nav.scholarships')],
         ['/library', t('nav.library')],
         ['/careers', t('nav.careers')],
+        ['/counseling', t('mod.counseling')],
         ['/sidf', 'SIDF'],
       ],
     },
@@ -57,6 +59,7 @@ export default function Footer() {
         ['/faq', t('nav.faq')],
         ['/help', t('nav.help')],
         ['/about', t('nav.about')],
+        ['/architecture', t('nav.architecture')],
       ],
     },
   ]

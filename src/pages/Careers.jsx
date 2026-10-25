@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Briefcase, Building, CalendarClock, ExternalLink, GraduationCap, MapPin, Rocket, Target, Wallet } from 'lucide-react'
 import { Badge, ChipGroup, DemoNotice, EmptyState, PageHeader, SearchInput, SectionHeader } from '../components/ui'
 import { listings, programs, sources, yearGuidance } from '../data/careers'
+import JobMatches from '../components/careers/JobMatches'
 
 const daysLeft = (d) => Math.ceil((new Date(d) - Date.now()) / 86400000)
 
@@ -27,6 +28,7 @@ export default function Careers() {
     <>
       <PageHeader icon={Briefcase} kicker="Internships & Jobs" title="The right opportunity for your year" subtitle="Year-wise guidance, curated listings and trusted programs. We always credit and link to the original source." crumbs={[{ label: 'Internships & Jobs' }]} />
       <div className="container-x py-8">
+        <JobMatches />
         <SectionHeader icon={Target} title="Year-wise guidance" subtitle="What to focus on and which opportunities suit you" />
         <div className="mb-4 grid grid-cols-4 gap-2 sm:w-fit">
           {[1, 2, 3, 4].map((y) => (

@@ -32,16 +32,21 @@ export const sources = {
 }
 
 export const listings = [
-  { id: 'j1', kind: 'internship', title: 'Frontend Developer Intern (React)', company: 'CodeCraft Labs', location: 'Remote', stipend: '₹10,000 /month', years: [2, 3], eligibility: 'B.Tech/BCA, React basics', deadline: '2026-11-20', source: 'internshala', tags: ['React', 'Tailwind'] },
-  { id: 'j2', kind: 'internship', title: 'Machine Learning Intern', company: 'DataNest AI', location: 'Bengaluru (Hybrid)', stipend: '₹25,000 /month', years: [3, 4], eligibility: 'Python, ML fundamentals, 7+ CGPA', deadline: '2026-11-30', source: 'linkedin', tags: ['Python', 'PyTorch'] },
-  { id: 'j3', kind: 'internship', title: 'Social Media & Content Intern', company: 'GreenRoots NGO', location: 'Remote', stipend: 'Certificate + LOR', years: [1, 2], eligibility: 'Any course, good writing skills', deadline: '2026-11-15', source: 'internshala', tags: ['Content', 'Canva'] },
-  { id: 'j4', kind: 'internship', title: 'Business Development Intern', company: 'Tiffinly', location: 'Bhopal', stipend: '₹8,000 /month', years: [1, 2, 3], eligibility: 'BBA/B.Com/any, communication skills', deadline: '2026-12-05', source: 'internshala', tags: ['Sales', 'Marketing'] },
-  { id: 'j5', kind: 'internship', title: 'Research Intern — IoT for Agriculture', company: 'AgriSense Labs', location: 'Indore', stipend: '₹12,000 /month', years: [2, 3], eligibility: 'ECE/CSE, Arduino or ESP32', deadline: '2026-12-10', source: 'company', tags: ['IoT', 'Embedded'] },
-  { id: 'j6', kind: 'internship', title: 'Data Analyst Intern', company: 'FinEdge', location: 'Remote', stipend: '₹15,000 /month', years: [3, 4], eligibility: 'SQL, Excel, Python', deadline: '2026-11-25', source: 'linkedin', tags: ['SQL', 'Power BI'] },
-  { id: 'j7', kind: 'job', title: 'Graduate Software Engineer', company: 'Nimbus Systems', location: 'Pune', stipend: '₹6–9 LPA', years: [4], eligibility: 'B.Tech/MCA 2026 batch, 6.5+ CGPA', deadline: '2026-12-01', source: 'linkedin', tags: ['Java', 'DSA'] },
-  { id: 'j8', kind: 'job', title: 'Associate Analyst', company: 'Insight Analytics', location: 'Gurugram', stipend: '₹5–6 LPA', years: [4], eligibility: 'Any graduate, aptitude test', deadline: '2026-11-28', source: 'naukri', tags: ['Excel', 'Aptitude'] },
-  { id: 'j9', kind: 'job', title: 'Graduate Engineer Trainee — Mechanical', company: 'Vidarbha Precision Works', location: 'Nagpur', stipend: '₹4.5 LPA', years: [4], eligibility: 'B.Tech Mechanical, 60%+', deadline: '2026-12-15', source: 'company', tags: ['Core', 'Manufacturing'] },
-  { id: 'j10', kind: 'job', title: 'Management Trainee — Sales', company: 'UrbanKart', location: 'Jaipur', stipend: '₹4–5 LPA', years: [4], eligibility: 'BBA/MBA/B.Com', deadline: '2026-12-20', source: 'naukri', tags: ['Sales', 'Retail'] },
+  { id: 'j1', degrees: ['btech-cse','bca'], kind: 'internship', title: 'Frontend Developer Intern (React)', company: 'CodeCraft Labs', location: 'Remote', stipend: '₹10,000 /month', years: [2, 3], eligibility: 'B.Tech/BCA, React basics', deadline: '2026-11-20', source: 'internshala', tags: ['React', 'Tailwind'] },
+  { id: 'j2', degrees: ['btech-cse','bsc'], kind: 'internship', title: 'Machine Learning Intern', company: 'DataNest AI', location: 'Bengaluru (Hybrid)', stipend: '₹25,000 /month', years: [3, 4], eligibility: 'Python, ML fundamentals, 7+ CGPA', deadline: '2026-11-30', source: 'linkedin', tags: ['Python', 'PyTorch'] },
+  { id: 'j3', degrees: ['ba','bcom','bba','bsc','bca','btech-cse','btech-core'], kind: 'internship', title: 'Social Media & Content Intern', company: 'GreenRoots NGO', location: 'Remote', stipend: 'Certificate + LOR', years: [1, 2], eligibility: 'Any course, good writing skills', deadline: '2026-11-15', source: 'internshala', tags: ['Content', 'Canva'] },
+  { id: 'j4', degrees: ['bba','bcom','ba'], kind: 'internship', title: 'Business Development Intern', company: 'Tiffinly', location: 'Bhopal', stipend: '₹8,000 /month', years: [1, 2, 3], eligibility: 'BBA/B.Com/any, communication skills', deadline: '2026-12-05', source: 'internshala', tags: ['Sales', 'Marketing'] },
+  { id: 'j5', degrees: ['btech-cse','btech-core'], kind: 'internship', title: 'Research Intern — IoT for Agriculture', company: 'AgriSense Labs', location: 'Indore', stipend: '₹12,000 /month', years: [2, 3], eligibility: 'ECE/CSE, Arduino or ESP32', deadline: '2026-12-10', source: 'company', tags: ['IoT', 'Embedded'] },
+  { id: 'j6', degrees: ['btech-cse','bca','bsc','bcom'], kind: 'internship', title: 'Data Analyst Intern', company: 'FinEdge', location: 'Remote', stipend: '₹15,000 /month', years: [3, 4], eligibility: 'SQL, Excel, Python', deadline: '2026-11-25', source: 'linkedin', tags: ['SQL', 'Power BI'] },
+  { id: 'j7', degrees: ['btech-cse','bca'], kind: 'job', title: 'Graduate Software Engineer', company: 'Nimbus Systems', location: 'Pune', stipend: '₹6–9 LPA', years: [4], eligibility: 'B.Tech/MCA 2026 batch, 6.5+ CGPA', deadline: '2026-12-01', source: 'linkedin', tags: ['Java', 'DSA'] },
+  { id: 'j8', degrees: ['ba','bcom','bba','bsc','bca','btech-cse','btech-core'], kind: 'job', title: 'Associate Analyst', company: 'Insight Analytics', location: 'Gurugram', stipend: '₹5–6 LPA', years: [4], eligibility: 'Any graduate, aptitude test', deadline: '2026-11-28', source: 'naukri', tags: ['Excel', 'Aptitude'] },
+  { id: 'j9', degrees: ['btech-core'], kind: 'job', title: 'Graduate Engineer Trainee — Mechanical', company: 'Vidarbha Precision Works', location: 'Nagpur', stipend: '₹4.5 LPA', years: [4], eligibility: 'B.Tech Mechanical, 60%+', deadline: '2026-12-15', source: 'company', tags: ['Core', 'Manufacturing'] },
+  { id: 'j10', degrees: ['bba','bcom'], kind: 'job', title: 'Management Trainee — Sales', company: 'UrbanKart', location: 'Jaipur', stipend: '₹4–5 LPA', years: [4], eligibility: 'BBA/MBA/B.Com', deadline: '2026-12-20', source: 'naukri', tags: ['Sales', 'Retail'] },
+  { id: 'j11', degrees: ['bpharm'], kind: 'job', title: 'Pharmacist / Pharmacy Associate', company: 'CareWell Pharmacy Chain', location: 'Bhopal', stipend: '₹2.6–3.5 LPA', years: [4], eligibility: 'B.Pharm, registered pharmacist', deadline: '2026-12-12', source: 'naukri', tags: ['Pharmacy', 'Communication'] },
+  { id: 'j12', degrees: ['allied', 'bsc'], kind: 'job', title: 'Medical Lab Technologist', company: 'Sanjeevani Diagnostics', location: 'Indore', stipend: '₹2.4–3 LPA', years: [4], eligibility: 'B.Sc MLT / B.Sc Life Sciences', deadline: '2026-12-08', source: 'naukri', tags: ['Lab', 'Pathology'] },
+  { id: 'j13', degrees: ['bcom', 'bba'], kind: 'job', title: 'Junior Accountant', company: 'Shree Traders & Co.', location: 'Bhopal', stipend: '₹2.4–3.2 LPA', years: [4], eligibility: 'B.Com, Tally & GST basics', deadline: '2026-12-18', source: 'naukri', tags: ['Tally', 'GST', 'Excel'] },
+  { id: 'j14', degrees: ['ba', 'bcom', 'bba', 'bsc', 'bca'], kind: 'job', title: 'Customer Success Associate (Hindi + English)', company: 'Bharat FinServe', location: 'Remote', stipend: '₹3–3.6 LPA', years: [4], eligibility: 'Any graduate, good communication', deadline: '2026-12-22', source: 'linkedin', tags: ['Communication', 'Hindi'] },
+  { id: 'j15', degrees: ['btech-cse', 'bca', 'bsc'], kind: 'job', title: 'Junior Data Analyst', company: 'Insight Analytics', location: 'Gurugram', stipend: '₹4.5–6 LPA', years: [4], eligibility: 'Any graduate with SQL, Excel & Python', deadline: '2026-12-14', source: 'linkedin', tags: ['SQL', 'Excel', 'Python'] },
 ]
 
 // Real, well-known programs — timelines are typical, always check the official site.
@@ -53,3 +58,25 @@ export const programs = [
   { name: 'MITACS Globalink', url: 'https://www.mitacs.ca/our-programs/globalink-research-internship-students/', window: 'Applications ~Sep', for: '3rd year · research in Canada' },
   { name: 'Internshala Internships', url: 'https://internshala.com/internships/', window: 'Year-round', for: 'All years' },
 ]
+
+/* Degree options for "Jobs matched to your profile" */
+export const degreeOptions = [
+  { id: 'btech-cse', label: 'B.Tech / B.E. (CSE / IT / ECE)' },
+  { id: 'btech-core', label: 'B.Tech / B.E. (Mechanical / Civil / Electrical)' },
+  { id: 'bca', label: 'BCA / MCA' },
+  { id: 'bsc', label: 'B.Sc' },
+  { id: 'bcom', label: 'B.Com' },
+  { id: 'bba', label: 'BBA / MBA' },
+  { id: 'ba', label: 'BA' },
+  { id: 'bpharm', label: 'B.Pharm' },
+  { id: 'allied', label: 'Allied health (BMLT, BPT…)' },
+]
+
+/** Score a listing against a profile: degree fit 40 + skill overlap 60. */
+export function matchListing(l, profile) {
+  const degreeFit = l.degrees?.includes(profile.degree) ? 40 : 0
+  const mine = new Set(profile.skills.map((x) => x.toLowerCase()))
+  const hits = l.tags.filter((t) => mine.has(t.toLowerCase()))
+  const skillFit = Math.round((hits.length / Math.max(1, l.tags.length)) * 60)
+  return { score: degreeFit + skillFit, hits, degreeFit: degreeFit > 0 }
+}

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Building, Home, ShieldCheck, PiggyBank, Landmark } from 'lucide-react'
 import HostelFinder from '../components/hostel/HostelFinder'
+import NearbyMap from '../components/hostel/NearbyMap'
 import { PageHeader } from '../components/ui'
 
 const perks = [
@@ -31,6 +32,7 @@ export default function Hostels() {
             </div>
           ))}
         </div>
+        <NearbyMap />
         <HostelFinder syncUrl />
       </div>
     </>

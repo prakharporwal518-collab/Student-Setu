@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Building, Eye, EyeOff, GraduationCap, Lightbulb, LogIn, Presentation, ShieldCheck, UserPlus, UtensilsCrossed } from 'lucide-react'
 import { Logo } from '../components/ui'
 import { CityArt } from '../components/ui/Illustrations'
-import { demoUsers, roleHome, useAuth, useToast } from '../context/AppContext'
+import { demoUsers, homeFor, studentStages, useAuth, useToast } from '../context/AppContext'
 import { cities } from '../data/common'
 
 const signupRoles = [
@@ -67,7 +67,7 @@ export function Login() {
   const [error, setError] = useState(params.get('wrong') ? `Please log in with a ${params.get('role')} account to open that page.` : '')
   const done = (u) => {
     toast(`Welcome back, ${u.name.split(' ')[0]}!`)
-    navigate(params.get('next') ?? roleHome(u.role), { replace: true })
+    navigate(params.get('next') ?? homeFor(u), { replace: true })
   }
 
   return (
@@ -85,7 +85,7 @@ export function Login() {
         <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500"><ShieldCheck className="h-4 w-4" /> Demo accounts (password: demo123)</p>
         <div className="flex flex-wrap gap-2">
           {demoUsers.filter((u) => !u.hidden).map((u) => (
-            <button key={u.id} onClick={() => done(login(u.email, u.password))} className="chip-off capitalize">{u.role === 'owner' ? 'Hostel owner' : u.role === 'provider' ? 'Tiffin provider' : u.role}</button>
+            <button key={u.id} onClick={() => done(login(u.email, u.password))} className="chip-off capitalize">{u.label ?? (u.role === 'owner' ? 'Hostel owner' : u.role === 'provider' ? 'Tiffin provider' : u.role)}</button>
           ))}
         </div>
       </div>
@@ -101,10 +101,11 @@ export function Signup() {
   const [role, setRole] = useState(params.get('role') && signupRoles.some((r) => r.id === params.get('role')) ? params.get('role') : 'student')
   const [form, setForm] = useState({ name: '', email: '', password: '', city: 'bhopal' })
   const [teacher, setTeacher] = useState({ college: '', employeeId: '', subjects: '' })
+  const [stage, setStage] = useState(['school', 'college', 'graduate'].includes(params.get('stage')) ? params.get('stage') : 'college')
   const [error, setError] = useState('')
   const done = (u) => {
     toast(`Welcome to Student Setu, ${u.name.split(' ')[0]}! 🎉`)
-    navigate(roleHome(u.role), { replace: true })
+    navigate(homeFor(u), { replace: true })
   }
 
   return (
@@ -120,9 +121,21 @@ export function Signup() {
       </div>
       <button onClick={() => done(googleLogin(role))} className="btn w-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"><GoogleIcon /> Sign up with Google</button>
       <div className="my-5 flex items-center gap-3 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /> or with email <span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /></div>
-      <form onSubmit={(e) => { e.preventDefault(); try { done(signup({ ...form, role, ...(role === 'teacher' ? { teacherProfile: { college: teacher.college.trim(), employeeId: teacher.employeeId.trim(), subjects: teacher.subjects.trim() } } : {}) })) } catch (err) { setError(err.message) } }} className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); try { done(signup({ ...form, role, stage, ...(role === 'teacher' ? { teacherProfile: { college: teacher.college.trim(), employeeId: teacher.employeeId.trim(), subjects: teacher.subjects.trim() } } : {}) })) } catch (err) { setError(err.message) } }} className="space-y-4">
         <div><label className="label">Full name</label><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" autoComplete="name" /></div>
         <div><label className="label">Email</label><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input" autoComplete="email" /></div>
+        {role === 'student' && (
+          <div>
+            <p className="label">I am a</p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {studentStages.map((st) => (
+                <button key={st.id} type="button" onClick={() => setStage(st.id)} aria-pressed={stage === st.id} className={`rounded-xl border p-2.5 text-left text-xs transition ${stage === st.id ? 'border-brand-700 bg-brand-50 ring-2 ring-brand-200 dark:bg-brand-500/10' : 'border-slate-200 dark:border-white/10'}`}>
+                  <span className="block text-sm font-bold text-slate-800 dark:text-white">{st.label}</span><span className="text-slate-500">{st.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {role === 'teacher' && (
           <fieldset className="space-y-3 rounded-2xl bg-brand-50 p-4 dark:bg-white/5">
             <legend className="sr-only">Teacher verification details</legend>

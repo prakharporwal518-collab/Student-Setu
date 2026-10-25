@@ -126,13 +126,22 @@ export const roles = [
   { id: 'admin', label: 'Admin', home: '/admin' },
 ]
 export const roleHome = (role) => roles.find((r) => r.id === role)?.home ?? '/'
+/** Students land on the page that fits their stage: school → pathways, graduate → matched jobs. */
+export const homeFor = (u) => (u?.role === 'student' && u.stage === 'school' ? '/pathways' : u?.role === 'student' && u.stage === 'graduate' ? '/careers' : roleHome(u?.role))
+export const studentStages = [
+  { id: 'school', label: 'School student', text: 'Class 9–12: courses & entrance exams' },
+  { id: 'college', label: 'College student', text: 'Skill gap, plan & verified badges' },
+  { id: 'graduate', label: 'Graduate', text: 'Jobs matched to my degree & skills' },
+]
 
 const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString()
 
 // `hidden` demo users don't get a one-click button on the login page (they exist so the
 // admin has teacher applications to review).
 export const demoUsers = [
-  { id: 'u-student', name: 'Ananya Sharma', email: 'student@demo.in', password: 'demo123', role: 'student', city: 'bhopal', college: 'rgpv' },
+  { id: 'u-school', label: 'School student', name: 'Rohan Verma', email: 'school@demo.in', password: 'demo123', role: 'student', stage: 'school', city: 'bhopal' },
+  { id: 'u-student', label: 'College student', name: 'Ananya Sharma', email: 'student@demo.in', password: 'demo123', role: 'student', stage: 'college', city: 'bhopal', college: 'rgpv' },
+  { id: 'u-graduate', label: 'Graduate', name: 'Vikram Rao', email: 'graduate@demo.in', password: 'demo123', role: 'student', stage: 'graduate', city: 'indore' },
   { id: 'u-owner', name: 'Ramesh Yadav', email: 'owner@demo.in', password: 'demo123', role: 'owner', city: 'bhopal' },
   { id: 'u-provider', name: 'Kamla Devi', email: 'provider@demo.in', password: 'demo123', role: 'provider', city: 'bhopal' },
   {
@@ -187,9 +196,10 @@ function AuthProvider({ children }) {
   )
 
   const signup = useCallback(
-    ({ name, email, password, role, city, teacherProfile }) => {
+    ({ name, email, password, role, city, teacherProfile, stage }) => {
       if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) throw new Error('An account with this email already exists')
       const nu = { id: 'u-' + Date.now(), name, email: email.trim(), password, role, city }
+      if (role === 'student') nu.stage = stage ?? 'college'
       if (role === 'teacher') nu.teacherProfile = { ...teacherProfile, status: 'pending', submittedAt: new Date().toISOString() }
       setUsers((us) => [...us, nu])
       setUser(nu)

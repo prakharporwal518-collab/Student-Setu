@@ -14,7 +14,18 @@
 | **Vocational training** | 7 trade tracks (electrician, mobile repair, solar PV, Tally & GST, digital marketing, office assistant, tailoring) with Hindi modules, verified tests and links to Skill India, Apprenticeship India and ITI. |
 | **Access to quality education** | Free notes, PYQs and syllabus, free quizzes, an e-library of legally shareable books, scholarships, internships, SIDF mentorship and peer tutors (seniors teach juniors). |
 
-**Student life support (optional):** hostel/PG finder with an owner portal, tiffin finder with a provider portal, local-student connect and a college directory. These remove the non-academic barriers that stop small-town students from accessing quality education.
+**From study to job — one platform for every stage:**
+
+| Stage | What Student Setu gives them |
+| --- | --- |
+| **School students** | `/pathways`: pick Class 12 subjects and see every course they can take (public & private), entrance exams with official links, a step-by-step roadmap, free notes and videos. |
+| **College students** | Skill Bridge, verified badges, study resources, the **Skills Hub** (free AI courses, a hands-on **AI Prompt Lab**, and a **leaderboard** showing the next step to a job). |
+| **Graduates** | `/careers`: update your profile (degree + skills) and get **jobs matched to your field**; verified badges count automatically. |
+| **Anyone under pressure** | `/counseling`: alternative careers if NEET, JEE, CLAT or CA doesn't go well, a drop-year self-check, **Talk to an Expert**, and Tele-MANAS (14416) for urgent support. |
+
+`/architecture` explains the tech stack and the path to national scale.
+
+**Student life support (optional):** hostel/PG finder with an owner portal and a map of stays & tiffin centres near each college, tiffin finder with a provider portal, local-student connect and a college directory. These remove the non-academic barriers that stop small-town students from accessing quality education.
 
 ## 🚀 Getting started
 
@@ -31,7 +42,9 @@ Use the one-click buttons on the Login page, or log in with password **`demo123`
 
 | Role | Email | Lands on |
 | --- | --- | --- |
-| Student | `student@demo.in` | `/dashboard` |
+| School student | `school@demo.in` | `/pathways` |
+| College student | `student@demo.in` | `/dashboard` |
+| Graduate | `graduate@demo.in` | `/careers` (matched jobs) |
 | Hostel owner | `owner@demo.in` | `/owner` |
 | Tiffin provider | `provider@demo.in` | `/provider` |
 | Teacher (verified) | `teacher@demo.in` | `/teacher` dashboard |

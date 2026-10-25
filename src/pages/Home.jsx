@@ -1,4 +1,4 @@
-import { FeaturedCities, Hero, HowItWorks, ModuleCards, Stats, Testimonials } from '../components/home/HomeSections'
+import { FeaturedCities, Hero, HowItWorks, ModuleCards, StageChooser, Stats, Testimonials } from '../components/home/HomeSections'
 import { BharatSection, SkillBridgeShowcase, StudentLifeSection, TeacherShowcase } from '../components/home/Showcases'
 
 // Learning first: Skill Bridge, Teacher Copilot and remote-learning features lead;
@@ -8,6 +8,7 @@ export default function Home() {
     <>
       <Hero />
       <ModuleCards />
+      <StageChooser />
       <Stats />
       <SkillBridgeShowcase />
       <HowItWorks />

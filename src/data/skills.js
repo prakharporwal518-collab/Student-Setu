@@ -117,3 +117,23 @@ export const pricingPlans = [
   { id: 'pro', name: 'Pro', price: 'TBA', period: 'pricing coming soon', highlight: true, features: ['Everything in Free', 'Premium live courses', 'Mock interviews', 'Priority mentor sessions', 'Certificates'] },
   { id: 'campus', name: 'Campus', price: 'Custom', period: 'for colleges', highlight: false, features: ['SIDF incubation support', 'Workshops on campus', 'Analytics dashboard', 'Dedicated coordinator'] },
 ]
+
+// AI skill courses — all free. Hands-on practice happens on Student Setu itself (Prompt Lab, AI coach).
+export const aiCourses = [
+  { title: 'Elements of AI', provider: 'University of Helsinki', url: 'https://www.elementsofai.com', level: 'Beginner · no coding', hours: 30 },
+  { title: 'Machine Learning Crash Course', provider: 'Google', url: 'https://developers.google.com/machine-learning/crash-course', level: 'Beginner → Intermediate', hours: 15 },
+  { title: 'AI for Beginners (24 lessons)', provider: 'Microsoft', url: 'https://github.com/microsoft/AI-For-Beginners', level: 'Beginner', hours: 24 },
+  { title: 'Kaggle Learn: Python, ML & Intro to AI', provider: 'Kaggle', url: 'https://www.kaggle.com/learn', level: 'Hands-on', hours: 20 },
+  { title: 'Practical Deep Learning for Coders', provider: 'fast.ai', url: 'https://course.fast.ai', level: 'Intermediate', hours: 40 },
+  { title: 'Introduction to Machine Learning (NPTEL)', provider: 'IIT · SWAYAM', url: 'https://nptel.ac.in', level: 'Certificate', hours: 48 },
+]
+
+// Sample classmates for the demo leaderboard.
+export const leaderboardPeers = [
+  { name: 'Aarav Mehta', college: 'RGPV', points: 860 },
+  { name: 'Sneha Patil', college: 'DAVV', points: 720 },
+  { name: 'Ishaan Khan', college: 'MANIT', points: 610 },
+  { name: 'Priya Rawat', college: 'RGPV', points: 480 },
+  { name: 'Kabir Singh', college: 'LNCT', points: 350 },
+  { name: 'Meera Joshi', college: 'IES', points: 240 },
+]

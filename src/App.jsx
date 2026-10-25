@@ -12,6 +12,9 @@ const Verify = page('Verify')
 const Teacher = page('Teacher')
 const ClassRoom = page('ClassRoom')
 const Vocational = page('Vocational')
+const Pathways = page('Pathways')
+const Counseling = page('Counseling')
+const Architecture = page('Architecture')
 const Hostels = page('Hostels')
 const HostelDetail = page('HostelDetail')
 const OwnerDashboard = page('OwnerDashboard')
@@ -57,6 +60,9 @@ export default function App() {
         <Route path="teacher" element={<Teacher />} />
         <Route path="class" element={<ClassRoute />} />
         <Route path="class/:code" element={<ClassRoute />} />
+        <Route path="pathways" element={<Pathways />} />
+        <Route path="counseling" element={<Counseling />} />
+        <Route path="architecture" element={<Architecture />} />
         <Route path="vocational" element={<Vocational />} />
         <Route path="resources" element={<Resources />} />
         <Route path="skills" element={<Skills />} />

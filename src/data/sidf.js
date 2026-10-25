@@ -53,3 +53,16 @@ export const teamPosts = [
   { id: 'tp2', title: 'Looking for a hardware person (IoT)', by: 'Megha Rathi', college: 'IIT Indore', skills: ['ESP32', 'PCB'], spots: 1, createdAt: '2026-10-22T08:00:00Z' },
   { id: 'tp3', title: 'Designer wanted for EdTech idea', by: 'Sneha Patel', college: 'LNCT', skills: ['Figma', 'UX research'], spots: 1, createdAt: '2026-10-23T15:00:00Z' },
 ]
+
+// Government startup funding schemes & grants — official links only. Amounts change; check each portal.
+export const fundingSchemes = [
+  { name: 'Startup India Seed Fund Scheme (SISFS)', by: 'DPIIT, Govt. of India', for: 'Proof of concept, prototype & market entry via approved incubators', url: 'https://seedfund.startupindia.gov.in', tag: 'Seed grant' },
+  { name: 'Atal Innovation Mission (AIM)', by: 'NITI Aayog', for: 'Atal Incubation Centres, Atal Tinkering Labs & innovation challenges', url: 'https://aim.gov.in', tag: 'Incubation' },
+  { name: 'NIDHI (PRAYAS, EIR, TBI)', by: 'Dept. of Science & Technology', for: 'Prototype grants (PRAYAS) and fellowships for student founders', url: 'https://nidhi.dst.gov.in', tag: 'Prototype grant' },
+  { name: 'BIRAC BIG (Biotechnology Ignition Grant)', by: 'Dept. of Biotechnology', for: 'Early-stage biotech & health-tech ideas', url: 'https://birac.nic.in', tag: 'Biotech grant' },
+  { name: 'MeitY Startup Hub & TIDE 2.0', by: 'Ministry of Electronics & IT', for: 'Tech startups via incubators across India', url: 'https://msh.meity.gov.in', tag: 'Tech startups' },
+  { name: 'MSME Idea Hackathon & Incubation', by: 'Ministry of MSME', for: 'Support for innovative ideas through host institutes', url: 'https://msme.gov.in', tag: 'Idea support' },
+  { name: 'Stand-Up India', by: 'Dept. of Financial Services', for: 'Bank loans for SC/ST and women entrepreneurs', url: 'https://www.standupmitra.in', tag: 'Loans' },
+  { name: 'PM Mudra Yojana', by: 'Govt. of India', for: 'Collateral-free loans for micro & small businesses', url: 'https://www.mudra.org.in', tag: 'Loans' },
+  { name: 'MP Startup Policy', by: 'Govt. of Madhya Pradesh', for: 'State incentives & support for startups in MP', url: 'https://startup.mp.gov.in', tag: 'State scheme' },
+]

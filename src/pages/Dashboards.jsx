@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Bookmark, BookOpen, Check, CheckCircle2, ClipboardList, Flag, GraduationCap, Heart, Inbox, Lightbulb, MessageSquare, RotateCcw, ShieldCheck, Soup, Trophy, Users, X, BedDouble } from 'lucide-react'
-import { Avatar, Badge, ChipGroup, EmptyState, SmartImage } from '../components/ui'
+import { Avatar, Badge, ChipGroup, EmptyState, Modal, SmartImage } from '../components/ui'
 import { DashboardShell, statusTone } from '../components/ui/Dashboard'
 import HostelCard from '../components/hostel/HostelCard'
 import Ring from '../components/ui/Ring'
@@ -144,9 +144,16 @@ export function MentorDashboard() {
 /* ----------------------------------------------------------------- Admin */
 export function AdminPanel() {
   const { hostels, tiffins, hostelActions, tiffinActions, reports, resolveReport, resetDemo } = useData()
-  const { users } = useAuth()
+  const { users, updateUser } = useAuth()
+  const teachers = users.filter((u) => u.role === 'teacher')
+  const pendingTeachers = teachers.filter((u) => u.teacherProfile?.status === 'pending')
+  const [rejecting, setRejecting] = useState(null)
+  const review = (u, status, reviewNote) => {
+    updateUser(u.id, (cur) => ({ teacherProfile: { ...cur.teacherProfile, status, reviewNote, reviewedAt: new Date().toISOString() } }))
+    toast(status === 'verified' ? `${u.name} is now a verified teacher ✓` : `${u.name}'s application was rejected`, status === 'verified' ? 'success' : 'info')
+  }
   const toast = useToast()
-  const [tab, setTab] = useState('listings')
+  const [tab, setTab] = useState('teachers')
   const pendingH = hostels.filter((h) => h.status === 'pending')
   const pendingT = tiffins.filter((t) => t.status === 'pending')
   const allReviews = [
@@ -169,11 +176,53 @@ export function AdminPanel() {
         { icon: ClipboardList, label: 'Pending verification', value: pendingH.length + pendingT.length, tint: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15' },
         { icon: BedDouble, label: 'Hostels live', value: hostels.filter((h) => h.status === 'approved').length },
         { icon: Flag, label: 'Open reports', value: reports.filter((r) => r.status === 'open').length, tint: 'bg-rose-50 text-rose-600 dark:bg-rose-500/15' },
-        { icon: Users, label: 'Registered users', value: users.length, tint: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15' },
+        { icon: GraduationCap, label: 'Teachers to verify', value: pendingTeachers.length, tint: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15' },
       ]}
     >
-      <ChipGroup value={tab} onChange={setTab} options={[{ value: 'listings', label: `Approve listings (${pendingH.length + pendingT.length})` }, { value: 'all', label: 'All listings' }, { value: 'reviews', label: 'Moderate reviews' }, { value: 'reports', label: 'Content reports' }]} />
+      <ChipGroup value={tab} onChange={setTab} options={[{ value: 'teachers', label: `Verify teachers (${pendingTeachers.length})` }, { value: 'listings', label: `Approve listings (${pendingH.length + pendingT.length})` }, { value: 'all', label: 'All listings' }, { value: 'reviews', label: 'Moderate reviews' }, { value: 'reports', label: 'Content reports' }]} />
       <div className="mt-5">
+        {tab === 'teachers' && (
+          <div className="space-y-4">
+            {pendingTeachers.length === 0 && <EmptyState icon={ShieldCheck} title="No teachers waiting" text="New teacher sign-ups appear here for verification." />}
+            {pendingTeachers.map((u) => {
+              const p = u.teacherProfile
+              return (
+                <div key={u.id} className="card flex flex-col gap-4 p-5 md:flex-row md:items-center">
+                  <Avatar name={u.name} size="h-12 w-12" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold">{u.name} <span className="text-sm font-normal text-slate-400">· {u.email}</span></p>
+                    <p className="text-sm text-slate-600 dark:text-slate-300">{p.college} · Employee ID <b>{p.employeeId}</b></p>
+                    <p className="text-xs text-slate-500">Teaches {p.subjects} · applied {new Date(p.submittedAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</p>
+                    <p className="mt-1 text-xs text-slate-400">Check: the college’s faculty list or ID card, and that the email/phone matches the institute.</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => review(u, 'verified')} className="btn-primary py-2"><Check className="h-4 w-4" /> Verify</button>
+                    <button onClick={() => setRejecting(u)} className="btn-ghost py-2 text-rose-600"><X className="h-4 w-4" /> Reject</button>
+                  </div>
+                </div>
+              )
+            })}
+            <div className="card overflow-x-auto">
+              <p className="p-4 font-bold">All teachers ({teachers.length})</p>
+              <table className="w-full min-w-[520px] text-left text-sm">
+                <thead className="border-y border-slate-100 text-xs uppercase text-slate-400 dark:border-white/10"><tr><th className="p-3">Teacher</th><th className="p-3">College</th><th className="p-3">Status</th><th className="p-3" /></tr></thead>
+                <tbody>
+                  {teachers.map((u) => {
+                    const st = u.teacherProfile?.status ?? 'incomplete'
+                    return (
+                      <tr key={u.id} className="border-b border-slate-50 last:border-0 dark:border-white/5">
+                        <td className="p-3 font-semibold">{u.name}</td>
+                        <td className="p-3 text-slate-500">{u.teacherProfile?.college || '—'}</td>
+                        <td className="p-3"><Badge tone={st === 'verified' ? 'green' : st === 'pending' ? 'amber' : st === 'rejected' ? 'red' : 'gray'} className="capitalize">{st}</Badge></td>
+                        <td className="p-3 text-right">{st === 'verified' ? <button onClick={() => review(u, 'pending')} className="text-xs text-rose-600 hover:underline">Revoke</button> : st !== 'incomplete' && <button onClick={() => review(u, 'verified')} className="text-xs text-brand-700 hover:underline">Verify</button>}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         {tab === 'listings' && (
           pendingH.length + pendingT.length === 0 ? <EmptyState icon={ShieldCheck} title="All caught up!" text="New hostel and tiffin listings will appear here for verification. Try adding one from the owner dashboard." /> : (
             <div className="grid gap-4 md:grid-cols-2">
@@ -221,6 +270,15 @@ export function AdminPanel() {
           )
         )}
       </div>
+      <Modal open={Boolean(rejecting)} onClose={() => setRejecting(null)} title={rejecting ? `Reject ${rejecting.name}?` : ''}>
+        {rejecting && (
+          <form onSubmit={(e) => { e.preventDefault(); review(rejecting, 'rejected', new FormData(e.currentTarget).get('note')); setRejecting(null) }} className="space-y-3">
+            <label className="label" htmlFor="reject-note">Reason (the teacher sees this)</label>
+            <textarea id="reject-note" name="note" required rows={3} className="input" placeholder="e.g. Employee ID does not match the college faculty list. Please upload your ID card." />
+            <button className="btn-primary w-full bg-rose-600 hover:bg-rose-700">Reject application</button>
+          </form>
+        )}
+      </Modal>
     </DashboardShell>
   )
 }

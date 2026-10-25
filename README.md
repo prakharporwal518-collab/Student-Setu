@@ -34,7 +34,7 @@ Use the one-click buttons on the Login page, or log in with password **`demo123`
 | Student | `student@demo.in` | `/dashboard` |
 | Hostel owner | `owner@demo.in` | `/owner` |
 | Tiffin provider | `provider@demo.in` | `/provider` |
-| Teacher | `teacher@demo.in` | `/teacher` |
+| Teacher (verified) | `teacher@demo.in` | `/teacher` dashboard |
 | Mentor | `mentor@demo.in` | `/mentor` |
 | Admin | `admin@demo.in` | `/admin` |
 
@@ -44,6 +44,15 @@ Use the one-click buttons on the Login page, or log in with password **`demo123`
 3. **Get verified** on HTML & CSS, then open the badge's verify link.
 4. `/teacher`: create a lesson plan (try हिंदी), click **Make a quiz on this**, generate questions, and **Assign** to a new class.
 5. On a phone, open `/class` and enter the code. The teacher sees the result and heatmap under **Classes & insights**. **Try a demo class** shows 26 students.
+
+**Teacher login & verification:**
+- Anyone can try the lesson planner and question paper generator as a guest (3 free AI tries). The quiz builder needs a teacher login, and classes need a **verified** teacher.
+- New teachers sign up with their college, employee ID and subjects. They start as **Verification pending**.
+- Log in as admin → **Verify teachers**. Two sample applications are waiting: `rakesh.verma@demo.in` and `sunita.iyer@demo.in` (password `demo123`). Verify or reject (with a reason the teacher sees).
+- Verified teachers get a dashboard (classes, submissions, average score, weakest topic), and their class pages show a **Verified teacher** badge with the college name.
+- **Copy private link** on the dashboard opens your classes on another device.
+
+> Accounts are a browser-only demo (localStorage). For real use, switch to a real auth provider (Firebase, Supabase or Netlify Identity) and store the verification status on the server.
 
 **Owner flow:** log in as owner → add a listing → log in as admin → approve it → it now shows in the Hostel Finder with a Verified badge.
 

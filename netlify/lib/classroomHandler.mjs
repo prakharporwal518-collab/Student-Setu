@@ -41,12 +41,12 @@ export async function handle(req, store) {
         const subject = clip(b.subject, 100)
         const teacherName = clip(b.teacherName, 60)
         if (!subject || !teacherName) return json({ error: 'Subject and teacher name are required' }, 400)
-        const cls = { code: makeCode(), teacherKey: makeKey(), subject, teacherName, course: clip(b.course, 40), semester: clip(b.semester, 4), createdAt: new Date().toISOString(), quizzes: [], notes: [] }
+        const cls = { code: makeCode(), teacherKey: makeKey(), subject, teacherName, college: clip(b.college, 100), teacherVerified: Boolean(b.teacherVerified), course: clip(b.course, 40), semester: clip(b.semester, 4), createdAt: new Date().toISOString(), quizzes: [], notes: [] }
         await store.setJSON(classKey(cls.code), cls)
         return json({ code: cls.code, teacherKey: cls.teacherKey, class: publicClass(cls) })
       }
       case 'createDemo': {
-        const { cls, submissions } = seedDemoClass(clip(b.teacherName, 60) || undefined)
+        const { cls, submissions } = seedDemoClass(clip(b.teacherName, 60) || undefined, clip(b.college, 100) || undefined)
         await store.setJSON(classKey(cls.code), cls)
         await Promise.all(submissions.map((s) => store.setJSON(`${subPrefix(cls.code)}${s.id}`, s)))
         return json({ code: cls.code, teacherKey: cls.teacherKey, class: publicClass(cls) })

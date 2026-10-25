@@ -3,11 +3,12 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { BarChart3, BookOpenCheck, CheckCircle2, ClipboardList, Copy, FileText, Info, Loader2, NotebookPen, Plus, Presentation, Printer, Sparkles, Trash2, Users, Wand2 } from 'lucide-react'
 import { Badge, ChipGroup, EmptyState, PageHeader, Select } from '../components/ui'
 import { ListenButton, WhatsAppButton } from '../components/ui/Share'
-import { useAuth, useToast } from '../context/AppContext'
+import { teacherStatus, useAuth, useToast } from '../context/AppContext'
+import { GUEST_LIMIT, LockedCard, TeacherDashboard, TeacherGate, VerificationNotice, useGuestQuota } from '../components/teacher/TeacherAccount'
 import { courses } from '../data/resources'
 import { collegeById } from '../data/colleges'
 import { generate } from '../services/copilot'
-import { addNote, addQuiz, createClass, createDemoClass, detectMode, forgetClass, getResults, myClasses } from '../services/classroom'
+import { addNote, addQuiz, createClass, createDemoClass, detectMode, forgetClass, getResults, importClasses, myClasses } from '../services/classroom'
 
 const classLink = (code) => `${location.origin}/class/${code}`
 
@@ -63,7 +64,7 @@ function SourceNote({ out }) {
 const lessonToText = (l) =>
   [l.title, '', 'Objectives:', ...(l.objectives ?? []).map((o) => `• ${o}`), '', 'Plan:', ...(l.timeline ?? []).map((t) => `• ${t.minutes} min — ${t.activity}: ${t.details}`), '', `Activity: ${l.activity ?? ''}`, '', 'Homework:', ...(l.homework ?? []).map((h) => `• ${h}`)].join('\n')
 
-function LessonPlanner({ t, initialTopic, onMakeQuiz }) {
+function LessonPlanner({ t, initialTopic, onMakeQuiz, beforeGenerate }) {
   const toast = useToast()
   const [topic, setTopic] = useState(initialTopic || 'Normalization (1NF, 2NF, 3NF)')
   const [minutes, setMinutes] = useState('45')
@@ -75,7 +76,7 @@ function LessonPlanner({ t, initialTopic, onMakeQuiz }) {
 
   const run = async (e) => {
     e?.preventDefault()
-    if (!topic.trim()) return
+    if (!topic.trim() || !beforeGenerate()) return
     setBusy(true)
     try {
       setOut(await generate('lesson', { ...t.fields, topic, minutes }))
@@ -139,7 +140,7 @@ function LessonPlanner({ t, initialTopic, onMakeQuiz }) {
 }
 
 /* ----------------------------------------------------- question paper */
-function PaperGenerator({ t }) {
+function PaperGenerator({ t, beforeGenerate }) {
   const toast = useToast()
   const [topic, setTopic] = useState('Unit 1: ER model; Unit 2: Relational algebra; Unit 3: Normalization; Unit 4: Transactions; Unit 5: Indexing')
   const [marks, setMarks] = useState('70')
@@ -147,6 +148,7 @@ function PaperGenerator({ t }) {
   const [out, setOut] = useState(null)
   const run = async (e) => {
     e.preventDefault()
+    if (!beforeGenerate()) return
     setBusy(true)
     try {
       setOut(await generate('paper', { ...t.fields, topic, marks }))
@@ -197,7 +199,7 @@ function PaperGenerator({ t }) {
 /* ------------------------------------------------------- quiz builder */
 const blankQ = () => ({ q: '', options: ['', '', '', ''], answer: 0, topic: '', explanation: '' })
 
-function QuizBuilder({ t, initialTopic, classes, refreshClasses, onAssigned }) {
+function QuizBuilder({ t, initialTopic, classes, refreshClasses, onAssigned, canAssign }) {
   const toast = useToast()
   const { user } = useAuth()
   const [title, setTitle] = useState('Unit test')
@@ -237,7 +239,7 @@ function QuizBuilder({ t, initialTopic, classes, refreshClasses, onAssigned }) {
     try {
       let code = target || '__new'
       if (code === '__new') {
-        const res = await createClass({ teacherName: user?.name || 'Teacher', subject: t.fields.subject, course: t.fields.course, semester: String(t.fields.semester) })
+        const res = await createClass(user, { subject: t.fields.subject, course: t.fields.course, semester: String(t.fields.semester) })
         code = res.code
         refreshClasses()
         setTarget(code)
@@ -291,7 +293,8 @@ function QuizBuilder({ t, initialTopic, classes, refreshClasses, onAssigned }) {
         <button onClick={() => setQs((l) => [...l, blankQ()])} className="btn-outline"><Plus className="h-4 w-4" /> Add question manually</button>
       </div>
 
-      {qs.length > 0 && (
+      {qs.length > 0 && !canAssign && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-200">You can build and edit quizzes now. Assigning them to a class unlocks once your teacher profile is verified.</p>}
+      {qs.length > 0 && canAssign && (
         <div className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-end">
           <div className="flex-1">
             <label className="label">Assign to class</label>
@@ -349,7 +352,7 @@ function Classes({ classes, refreshClasses, selected, setSelected, onReteach }) 
   const demo = async () => {
     setBusy(true)
     try {
-      const r = await createDemoClass(user?.role === 'teacher' ? user.name : undefined)
+      const r = await createDemoClass(user)
       refreshClasses()
       setSelected(r.code)
       toast('Demo class created with 26 student results')
@@ -362,7 +365,7 @@ function Classes({ classes, refreshClasses, selected, setSelected, onReteach }) 
   const create = async (e) => {
     e.preventDefault()
     try {
-      const r = await createClass({ teacherName: user?.name || 'Teacher', subject })
+      const r = await createClass(user, { subject })
       refreshClasses()
       setSelected(r.code)
       setSubject('')
@@ -483,25 +486,61 @@ function Classes({ classes, refreshClasses, selected, setSelected, onReteach }) 
 
 /* -------------------------------------------------------------- page */
 export default function Teacher() {
+  const { user } = useAuth()
+  const toast = useToast()
+  const status = teacherStatus(user) // null = guest or non-teacher
+  const isTeacher = status !== null
+  const verified = status === 'verified'
   const [params, setParams] = useSearchParams()
-  const tab = params.get('tab') || 'lesson'
+  const tab = params.get('tab') || (isTeacher ? 'dashboard' : 'lesson')
   const setTab = (v) => setParams({ tab: v }, { replace: true })
   const t = useTeachingContext()
   const [topicHand, setTopicHand] = useState('')
-  const [classes, setClasses] = useState(myClasses)
-  const [selected, setSelected] = useState(() => myClasses()[0]?.code ?? '')
+  const ownClasses = () => (isTeacher ? myClasses(user.id) : [])
+  const [classes, setClasses] = useState(ownClasses)
+  const [selected, setSelected] = useState(() => ownClasses()[0]?.code ?? '')
   const [mode, setMode] = useState(null)
-  const refreshClasses = () => setClasses(myClasses())
+  const quota = useGuestQuota(!isTeacher)
+  const refreshClasses = () => setClasses(ownClasses())
   useEffect(() => {
     detectMode().then(setMode)
   }, [])
+  // Reload the class list when a different teacher signs in.
+  useEffect(() => {
+    const list = ownClasses()
+    setClasses(list)
+    setSelected(list[0]?.code ?? '')
+  }, [user?.id, status]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Private "open on another device" link.
+  useEffect(() => {
+    const token = params.get('import')
+    if (!token || !isTeacher) return
+    try {
+      const n = importClasses(token, user.id)
+      toast(`${n} class${n === 1 ? '' : 'es'} added to this device`)
+      refreshClasses()
+    } catch {
+      toast('That class link is not valid', 'warning')
+    }
+    setParams({ tab: 'dashboard' }, { replace: true })
+  }, [params, isTeacher]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const tabs = useMemo(() => [
-    { value: 'lesson', label: '📝 Lesson planner' },
-    { value: 'paper', label: '📄 Question paper' },
-    { value: 'quiz', label: '✅ Quiz builder' },
-    { value: 'classes', label: '📊 Classes & insights' },
-  ], [])
+  const beforeGenerate = () => {
+    if (quota.take()) return true
+    toast(`You’ve used your ${GUEST_LIMIT} free tries. Log in as a teacher (or try the demo teacher) for unlimited use.`, 'warning')
+    return false
+  }
+
+  const tabs = useMemo(
+    () => [
+      ...(isTeacher ? [{ value: 'dashboard', label: '🏠 Dashboard' }] : []),
+      { value: 'lesson', label: '📝 Lesson planner' },
+      { value: 'paper', label: '📄 Question paper' },
+      { value: 'quiz', label: `${isTeacher ? '✅' : '🔒'} Quiz builder` },
+      { value: 'classes', label: `${verified ? '📊' : '🔒'} Classes & insights` },
+    ],
+    [isTeacher, verified],
+  )
 
   return (
     <>
@@ -513,11 +552,13 @@ export default function Teacher() {
         </div>
       </PageHeader>
       <div className="container-x py-6">
+        {!isTeacher && <TeacherGate quotaLeft={quota.left} />}
         <div className="no-print mb-5"><ChipGroup value={tab} onChange={setTab} options={tabs} /></div>
-        {tab === 'lesson' && <LessonPlanner t={t} initialTopic={topicHand} onMakeQuiz={(topic) => { setTopicHand(topic); setTab('quiz') }} />}
-        {tab === 'paper' && <PaperGenerator t={t} />}
-        {tab === 'quiz' && <QuizBuilder t={t} initialTopic={topicHand} classes={classes} refreshClasses={refreshClasses} onAssigned={(code) => setSelected(code)} />}
-        {tab === 'classes' && <Classes classes={classes} refreshClasses={refreshClasses} selected={selected} setSelected={setSelected} onReteach={(topic) => { setTopicHand(topic); setTab('lesson') }} />}
+        {tab === 'dashboard' && isTeacher && <TeacherDashboard classes={classes} setTab={setTab} onOpenClass={(code) => { setSelected(code); setTab('classes') }} />}
+        {tab === 'lesson' && <LessonPlanner t={t} initialTopic={topicHand} beforeGenerate={beforeGenerate} onMakeQuiz={(topic) => { setTopicHand(topic); setTab('quiz') }} />}
+        {tab === 'paper' && <PaperGenerator t={t} beforeGenerate={beforeGenerate} />}
+        {tab === 'quiz' && (isTeacher ? <QuizBuilder t={t} initialTopic={topicHand} classes={classes} refreshClasses={refreshClasses} canAssign={verified} onAssigned={(code) => setSelected(code)} /> : <LockedCard title="The quiz builder" />)}
+        {tab === 'classes' && (verified ? <Classes classes={classes} refreshClasses={refreshClasses} selected={selected} setSelected={setSelected} onReteach={(topic) => { setTopicHand(topic); setTab('lesson') }} /> : isTeacher ? <VerificationNotice /> : <LockedCard title="Classes & insights" />)}
         <p className="no-print mt-8 text-center text-sm text-slate-500">Students open <Link to="/class" className="link">{location.host}/class</Link> and enter your class code — no login needed.</p>
       </div>
     </>

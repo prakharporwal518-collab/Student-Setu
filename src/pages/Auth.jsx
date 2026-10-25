@@ -71,7 +71,7 @@ export function Login() {
   }
 
   return (
-    <AuthShell title="Welcome back 👋" subtitle="Log in to your Student Setu account">
+    <AuthShell title={params.get('role') === 'teacher' ? 'Teacher login 👩‍🏫' : 'Welcome back 👋'} subtitle={params.get('role') === 'teacher' ? 'Log in to run classes, see your class heatmap and save lesson plans' : 'Log in to your Student Setu account'}>
       <button onClick={() => done(googleLogin(signupRoles.some((r) => r.id === params.get('role')) ? params.get('role') : 'student'))} className="btn w-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"><GoogleIcon /> Continue with Google</button>
       <div className="my-5 flex items-center gap-3 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /> or with email <span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /></div>
       <form onSubmit={(e) => { e.preventDefault(); try { done(login(email, password)) } catch (err) { setError(err.message) } }} className="space-y-4">
@@ -84,7 +84,7 @@ export function Login() {
       <div className="mt-8 rounded-2xl border border-dashed border-slate-300 p-4 dark:border-white/15">
         <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500"><ShieldCheck className="h-4 w-4" /> Demo accounts (password: demo123)</p>
         <div className="flex flex-wrap gap-2">
-          {demoUsers.map((u) => (
+          {demoUsers.filter((u) => !u.hidden).map((u) => (
             <button key={u.id} onClick={() => done(login(u.email, u.password))} className="chip-off capitalize">{u.role === 'owner' ? 'Hostel owner' : u.role === 'provider' ? 'Tiffin provider' : u.role}</button>
           ))}
         </div>
@@ -100,6 +100,7 @@ export function Signup() {
   const [params] = useSearchParams()
   const [role, setRole] = useState(params.get('role') && signupRoles.some((r) => r.id === params.get('role')) ? params.get('role') : 'student')
   const [form, setForm] = useState({ name: '', email: '', password: '', city: 'bhopal' })
+  const [teacher, setTeacher] = useState({ college: '', employeeId: '', subjects: '' })
   const [error, setError] = useState('')
   const done = (u) => {
     toast(`Welcome to Student Setu, ${u.name.split(' ')[0]}! 🎉`)
@@ -119,9 +120,20 @@ export function Signup() {
       </div>
       <button onClick={() => done(googleLogin(role))} className="btn w-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"><GoogleIcon /> Sign up with Google</button>
       <div className="my-5 flex items-center gap-3 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /> or with email <span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /></div>
-      <form onSubmit={(e) => { e.preventDefault(); try { done(signup({ ...form, role })) } catch (err) { setError(err.message) } }} className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); try { done(signup({ ...form, role, ...(role === 'teacher' ? { teacherProfile: { college: teacher.college.trim(), employeeId: teacher.employeeId.trim(), subjects: teacher.subjects.trim() } } : {}) })) } catch (err) { setError(err.message) } }} className="space-y-4">
         <div><label className="label">Full name</label><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" autoComplete="name" /></div>
         <div><label className="label">Email</label><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input" autoComplete="email" /></div>
+        {role === 'teacher' && (
+          <fieldset className="space-y-3 rounded-2xl bg-brand-50 p-4 dark:bg-white/5">
+            <legend className="sr-only">Teacher verification details</legend>
+            <p className="flex items-start gap-2 text-xs text-brand-900 dark:text-brand-100"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" /> We verify every teacher before they can run classes for students. Usually within 24 hours.</p>
+            <div><label className="label" htmlFor="t-college">College / institute</label><input id="t-college" required value={teacher.college} onChange={(e) => setTeacher({ ...teacher, college: e.target.value })} className="input" placeholder="e.g. Govt. Polytechnic, Bhopal" /></div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div><label className="label" htmlFor="t-emp">Employee / faculty ID</label><input id="t-emp" required value={teacher.employeeId} onChange={(e) => setTeacher({ ...teacher, employeeId: e.target.value })} className="input" placeholder="As on your college ID card" /></div>
+              <div><label className="label" htmlFor="t-sub">Subjects you teach</label><input id="t-sub" required value={teacher.subjects} onChange={(e) => setTeacher({ ...teacher, subjects: e.target.value })} className="input" placeholder="DBMS, Data Structures" /></div>
+            </div>
+          </fieldset>
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
           <div><label className="label">Password</label><PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} /></div>
           <div><label className="label">City</label><select value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="input select-arrow">{cities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>

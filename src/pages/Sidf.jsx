@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { CalendarDays, Check, ExternalLink, Lightbulb, MapPin, MessageSquarePlus, Presentation, Rocket, Star, Trophy, UserPlus, Users } from 'lucide-react'
+import { CalendarDays, Check, ExternalLink, IndianRupee, Lightbulb, MapPin, MessageSquarePlus, Presentation, Rocket, Star, Trophy, UserPlus, Users } from 'lucide-react'
 import { Avatar, Badge, Modal, PageHeader, SectionHeader } from '../components/ui'
 import { useData } from '../context/DataContext'
 import { useAuth, useToast } from '../context/AppContext'
 import { timeAgo } from '../data/common'
-import { challenges, mentors, pastIdeas, pitchTips, sidfEvents, sidfPillars } from '../data/sidf'
+import { challenges, fundingSchemes, mentors, pastIdeas, pitchTips, sidfEvents, sidfPillars } from '../data/sidf'
 
 const pillarIcons = { Rocket, Users, Trophy, Lightbulb }
 
@@ -116,6 +116,21 @@ export default function Sidf() {
               <ul className="space-y-3">{pastIdeas.map((p) => <li key={p.title} className="rounded-xl bg-slate-50 p-3 dark:bg-white/5"><div className="flex items-start justify-between gap-2"><p className="text-sm font-semibold">{p.title}</p><Badge tone="purple">{p.theme}</Badge></div><p className="mt-1 text-xs text-slate-500">Why it works: {p.why}</p></li>)}</ul>
             </div>
           </div>
+        </section>
+
+        <section className="mt-14" id="funding">
+          <SectionHeader icon={IndianRupee} title="Government startup funding & grants" subtitle="Official schemes your idea can apply to — seed grants, incubation, prototype funds and loans" />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {fundingSchemes.map((f) => (
+              <a key={f.name} href={f.url} target="_blank" rel="noreferrer" className="card card-hover group flex flex-col p-4">
+                <span className="flex items-start justify-between gap-2"><span className="font-bold group-hover:text-brand-700 dark:group-hover:text-brand-300">{f.name}</span><ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" /></span>
+                <span className="mt-0.5 text-xs text-slate-400">{f.by}</span>
+                <span className="mt-2 text-sm text-slate-600 dark:text-slate-300">{f.for}</span>
+                <span className="mt-3"><Badge tone="green">{f.tag}</Badge></span>
+              </a>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-slate-400">Eligibility and amounts change — always read the latest guidelines on the official portal.</p>
         </section>
 
         <section className="mt-14">

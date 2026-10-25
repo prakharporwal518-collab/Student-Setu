@@ -127,22 +127,54 @@ export const roles = [
 ]
 export const roleHome = (role) => roles.find((r) => r.id === role)?.home ?? '/'
 
+const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString()
+
+// `hidden` demo users don't get a one-click button on the login page (they exist so the
+// admin has teacher applications to review).
 export const demoUsers = [
   { id: 'u-student', name: 'Ananya Sharma', email: 'student@demo.in', password: 'demo123', role: 'student', city: 'bhopal', college: 'rgpv' },
   { id: 'u-owner', name: 'Ramesh Yadav', email: 'owner@demo.in', password: 'demo123', role: 'owner', city: 'bhopal' },
   { id: 'u-provider', name: 'Kamla Devi', email: 'provider@demo.in', password: 'demo123', role: 'provider', city: 'bhopal' },
-  { id: 'u-teacher', name: 'Prof. Meena Joshi', email: 'teacher@demo.in', password: 'demo123', role: 'teacher', city: 'bhopal' },
+  {
+    id: 'u-teacher', name: 'Prof. Meena Joshi', email: 'teacher@demo.in', password: 'demo123', role: 'teacher', city: 'bhopal',
+    teacherProfile: { college: 'Govt. Motilal Vigyan Mahavidyalaya, Bhopal', employeeId: 'MVM-2041', subjects: 'DBMS, Data Structures', status: 'verified', submittedAt: daysAgo(30), reviewedAt: daysAgo(29) },
+  },
   { id: 'u-mentor', name: 'Dr. Kavita Rao', email: 'mentor@demo.in', password: 'demo123', role: 'mentor', city: 'bhopal' },
   { id: 'u-admin', name: 'Admin', email: 'admin@demo.in', password: 'demo123', role: 'admin', city: 'bhopal' },
+  {
+    id: 'u-teacher-2', hidden: true, name: 'Rakesh Verma', email: 'rakesh.verma@demo.in', password: 'demo123', role: 'teacher', city: 'lucknow',
+    teacherProfile: { college: 'Govt. Polytechnic, Lucknow', employeeId: 'GPL-1187', subjects: 'Electrical Engineering, Basic Electronics', status: 'pending', submittedAt: daysAgo(1) },
+  },
+  {
+    id: 'u-teacher-3', hidden: true, name: 'Sunita Iyer', email: 'sunita.iyer@demo.in', password: 'demo123', role: 'teacher', city: 'indore',
+    teacherProfile: { college: 'Holkar Science College, Indore', employeeId: 'HSC-0932', subjects: 'Mathematics, Statistics', status: 'pending', submittedAt: daysAgo(2) },
+  },
 ]
+
+/** Teacher verification: 'incomplete' → 'pending' → 'verified' | 'rejected'. Admins count as verified. */
+export const teacherStatus = (u) => (u?.role === 'admin' ? 'verified' : u?.role === 'teacher' ? u.teacherProfile?.status ?? 'incomplete' : null)
 
 function AuthProvider({ children }) {
   const [users, setUsers] = usePersistentState('ss-users', demoUsers)
-  // Visitors from before the teacher role was added: make sure every demo account exists.
-  useEffect(() => {
-    if (demoUsers.some((d) => !users.some((u) => u.id === d.id))) setUsers((us) => [...us, ...demoUsers.filter((d) => !us.some((u) => u.id === d.id))])
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [user, setUser] = usePersistentState('ss-user', null)
+
+  // Older visitors: add any new demo accounts / fields (stored values win).
+  useEffect(() => {
+    setUsers((us) => {
+      const merged = us.map((u) => {
+        const d = demoUsers.find((x) => x.id === u.id)
+        return d ? { ...d, ...u, teacherProfile: u.teacherProfile ?? d.teacherProfile } : u
+      })
+      return [...merged, ...demoUsers.filter((d) => !us.some((u) => u.id === d.id))]
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep the signed-in session in sync with the account list (e.g. after an admin approves a teacher).
+  useEffect(() => {
+    if (!user) return
+    const fresh = users.find((u) => u.id === user.id)
+    if (fresh && JSON.stringify(fresh) !== JSON.stringify(user)) setUser(fresh)
+  }, [users]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback(
     (email, password) => {
@@ -155,9 +187,10 @@ function AuthProvider({ children }) {
   )
 
   const signup = useCallback(
-    ({ name, email, password, role, city }) => {
+    ({ name, email, password, role, city, teacherProfile }) => {
       if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) throw new Error('An account with this email already exists')
       const nu = { id: 'u-' + Date.now(), name, email: email.trim(), password, role, city }
+      if (role === 'teacher') nu.teacherProfile = { ...teacherProfile, status: 'pending', submittedAt: new Date().toISOString() }
       setUsers((us) => [...us, nu])
       setUser(nu)
       return nu
@@ -167,17 +200,26 @@ function AuthProvider({ children }) {
 
   const googleLogin = useCallback(
     (role = 'student') => {
-      const nu = { id: 'u-google-' + role, name: 'Google User', email: `google.${role}@gmail.com`, role, city: 'bhopal', google: true }
-      setUsers((us) => (us.some((u) => u.id === nu.id) ? us : [...us, nu]))
+      const existing = users.find((u) => u.id === 'u-google-' + role)
+      const nu = existing ?? { id: 'u-google-' + role, name: 'Google User', email: `google.${role}@gmail.com`, role, city: 'bhopal', google: true, ...(role === 'teacher' ? { teacherProfile: { status: 'incomplete' } } : {}) }
+      if (!existing) setUsers((us) => [...us, nu])
       setUser(nu)
       return nu
     },
-    [setUsers, setUser],
+    [users, setUsers, setUser],
+  )
+
+  /** Update any account (used by teachers completing their profile and admins verifying them). */
+  const updateUser = useCallback(
+    (id, patch) => {
+      setUsers((us) => us.map((u) => (u.id === id ? { ...u, ...(typeof patch === 'function' ? patch(u) : patch) } : u)))
+    },
+    [setUsers],
   )
 
   const logout = useCallback(() => setUser(null), [setUser])
 
-  return <AuthCtx.Provider value={{ user, users, login, signup, googleLogin, logout }}>{children}</AuthCtx.Provider>
+  return <AuthCtx.Provider value={{ user, users, login, signup, googleLogin, updateUser, logout }}>{children}</AuthCtx.Provider>
 }
 
 /* ----------------------------------------------------------------- Root */

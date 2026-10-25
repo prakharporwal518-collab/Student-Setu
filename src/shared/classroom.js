@@ -45,6 +45,7 @@ export function cleanNote(raw) {
 export function publicClass(cls) {
   return {
     code: cls.code, subject: cls.subject, course: cls.course, semester: cls.semester, teacherName: cls.teacherName, createdAt: cls.createdAt,
+    college: cls.college ?? '', teacherVerified: Boolean(cls.teacherVerified),
     demo: Boolean(cls.demo), notes: cls.notes ?? [],
     quizzes: (cls.quizzes ?? []).map((qz) => ({ id: qz.id, title: qz.title, createdAt: qz.createdAt, questions: qz.questions.map(({ q, options, topic }) => ({ q, options, topic })) })),
   }
@@ -95,12 +96,12 @@ const demoNames = ['Aman', 'Riya', 'Karan', 'Pooja', 'Rahul', 'Sneha', 'Vikas', 
 // How likely an average student is to get each topic right — Normalization is the weak spot.
 const topicSkill = { Normalization: 0.34, 'SQL Joins': 0.72, Transactions: 0.81, Indexing: 0.58, 'ER Model': 0.86 }
 
-export function seedDemoClass(teacherName = 'Prof. Meena Joshi') {
+export function seedDemoClass(teacherName = 'Prof. Meena Joshi', college = 'Govt. Motilal Vigyan Mahavidyalaya, Bhopal') {
   let seed = 7
   const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280)
   const quiz = { id: 'demo-dbms', title: 'Unit 3 check: Normalization, Joins & Transactions', createdAt: new Date(Date.now() - 2 * 864e5).toISOString(), questions: demoQuestions }
   const cls = {
-    code: makeCode(), teacherKey: makeKey(), subject: 'Database Management Systems', course: 'B.Tech CSE', semester: '5', teacherName, demo: true,
+    code: makeCode(), teacherKey: makeKey(), subject: 'Database Management Systems', course: 'B.Tech CSE', semester: '5', teacherName, college, teacherVerified: true, demo: true,
     createdAt: new Date(Date.now() - 7 * 864e5).toISOString(), quizzes: [quiz],
     notes: [{ id: 'n1', title: 'Unit 3 — Normalization (1NF to BCNF) with solved examples', url: 'https://nptel.ac.in/courses?searchText=database%20management%20system', text: 'Read before Monday. Focus on finding partial and transitive dependencies.', createdAt: new Date(Date.now() - 3 * 864e5).toISOString() }],
   }

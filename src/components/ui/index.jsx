@@ -18,7 +18,7 @@ export function Logo({ light = false, compact = false, navbar = false }) {
         <span className={`block whitespace-nowrap font-display text-xl font-extrabold tracking-tight ${light ? 'text-white' : 'text-brand-900 dark:text-white'}`}>
           Student <span className="text-saffron-500">Setu</span>
         </span>
-        {!compact && <span className={`${navbar ? 'block xl:hidden 2xl:block' : 'block'} whitespace-nowrap text-[11px] font-medium ${light ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>Bridging Students, Building Futures</span>}
+        {!compact && <span className={`${navbar ? 'hidden sm:block xl:hidden 2xl:block' : 'block'} whitespace-nowrap text-[11px] font-medium ${light ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>Bridging Students, Building Futures</span>}
       </span>
     </Link>
   )

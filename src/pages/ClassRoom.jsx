@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, BookOpenCheck, CheckCircle2, ClipboardList, Loader2, LogIn, School, XCircle } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, BookOpenCheck, CheckCircle2, ClipboardList, Loader2, LogIn, School, XCircle } from 'lucide-react'
 import { Badge, EmptyState, PageHeader } from '../components/ui'
 import { ListenButton } from '../components/ui/Share'
 import { useAuth, useToast } from '../context/AppContext'
@@ -98,7 +98,14 @@ export default function ClassRoom() {
   const cls = state.class
   return (
     <>
-      <PageHeader icon={School} kicker={`Class ${code}`} title={cls ? cls.subject : state.error ? 'Class not found' : 'Loading class…'} subtitle={cls ? `${cls.teacherName}${cls.course ? ` · ${cls.course}` : ''}${cls.semester ? ` · Semester ${cls.semester}` : ''}` : ''} crumbs={[{ label: 'Join class', to: '/class' }, { label: code }]} />
+      <PageHeader icon={School} kicker={`Class ${code}`} title={cls ? cls.subject : state.error ? 'Class not found' : 'Loading class…'} subtitle={cls ? `${cls.teacherName}${cls.course ? ` · ${cls.course}` : ''}${cls.semester ? ` · Semester ${cls.semester}` : ''}` : ''} crumbs={[{ label: 'Join class', to: '/class' }, { label: code }]}>
+        {cls?.teacherVerified && (
+          <div className="flex shrink-0 items-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm text-white ring-1 ring-white/20">
+            <BadgeCheck className="h-5 w-5 text-emerald-300" />
+            <span><b>Verified teacher</b>{cls.college ? <span className="block text-xs text-brand-100">{cls.college}</span> : null}</span>
+          </div>
+        )}
+      </PageHeader>
       <div className="container-x max-w-4xl py-8">
         {state.loading && <p className="flex items-center gap-2 text-slate-500"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</p>}
         {state.error && <EmptyState icon={School} title="Class not found" text={state.error} action={<Link to="/class" className="btn-primary">Try another code</Link>} />}

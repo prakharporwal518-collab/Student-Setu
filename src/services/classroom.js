@@ -30,15 +30,35 @@ export function detectMode() {
   return modePromise
 }
 
-/* Classes this teacher created on this device (code + secret key). */
-export const myClasses = () => read(LS_MINE, [])
+/* Classes created on this device (code + secret teacher key), each tagged with the owner's account id.
+ * Classes made before accounts existed (no ownerId) are shown to whichever teacher signs in. */
+const allMine = () => read(LS_MINE, [])
+export const myClasses = (ownerId) => allMine().filter((c) => !ownerId || !c.ownerId || c.ownerId === ownerId)
 function remember(entry) {
-  write(LS_MINE, [entry, ...myClasses().filter((c) => c.code !== entry.code)])
+  write(LS_MINE, [entry, ...allMine().filter((c) => c.code !== entry.code)])
 }
 export function forgetClass(code) {
-  write(LS_MINE, myClasses().filter((c) => c.code !== code))
+  write(LS_MINE, allMine().filter((c) => c.code !== code))
 }
-const keyFor = (code) => myClasses().find((c) => c.code === code)?.teacherKey
+const keyFor = (code) => allMine().find((c) => c.code === code)?.teacherKey
+
+/* -------- moving classes to another device (until real accounts sync this server-side) -------- */
+const b64 = (str) => btoa(String.fromCharCode(...new TextEncoder().encode(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+const unb64 = (str) => new TextDecoder().decode(Uint8Array.from(atob(str.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0)))
+
+/** Private link that opens this teacher's online classes on another device. */
+export function transferLink(ownerId) {
+  const list = myClasses(ownerId).filter((c) => c.mode === 'online').map(({ code, teacherKey, subject }) => ({ code, teacherKey, subject }))
+  return list.length ? `${location.origin}/teacher?import=${b64(JSON.stringify(list))}` : null
+}
+/** Adds classes from a transfer link to this device. Returns how many were added. */
+export function importClasses(token, ownerId) {
+  const list = JSON.parse(unb64(token))
+  if (!Array.isArray(list)) throw new Error('Invalid link')
+  const valid = list.filter((c) => /^[A-Z0-9]{6}$/.test(c?.code) && typeof c?.teacherKey === 'string')
+  valid.forEach((c) => remember({ code: c.code, teacherKey: c.teacherKey, subject: String(c.subject ?? '').slice(0, 100), mode: 'online', ownerId, createdAt: new Date().toISOString() }))
+  return valid.length
+}
 
 /* ------------------------------------------------ local implementation */
 const local = {
@@ -47,8 +67,8 @@ const local = {
     write(LS_CLASSES, { ...read(LS_CLASSES, {}), [cls.code]: cls })
     return { code: cls.code, teacherKey: cls.teacherKey, class: publicClass(cls) }
   },
-  createDemo(teacherName) {
-    const { cls, submissions } = seedDemoClass(teacherName)
+  createDemo(teacherName, college) {
+    const { cls, submissions } = seedDemoClass(teacherName, college)
     write(LS_CLASSES, { ...read(LS_CLASSES, {}), [cls.code]: cls })
     write(LS_SUBS, { ...read(LS_SUBS, {}), [cls.code]: submissions })
     return { code: cls.code, teacherKey: cls.teacherKey, class: publicClass(cls) }
@@ -74,30 +94,35 @@ const fail = (r) => {
 }
 
 /* ------------------------------------------------------- public API */
-export async function createClass({ teacherName, subject, course, semester }) {
+/**
+ * @param teacher  the signed-in teacher: { id, name, teacherProfile: { college } }
+ */
+export async function createClass(teacher, { subject, course, semester }) {
   const mode = await detectMode()
+  const fields = { teacherName: teacher.name, college: teacher.teacherProfile?.college ?? '', teacherVerified: true, subject, course, semester }
   if (mode === 'online') {
-    const r = await postFn('classroom', { action: 'create', teacherName, subject, course, semester })
+    const r = await postFn('classroom', { action: 'create', ...fields })
     if (!r.ok) fail(r)
-    remember({ code: r.data.code, teacherKey: r.data.teacherKey, subject, mode, createdAt: new Date().toISOString() })
+    remember({ code: r.data.code, teacherKey: r.data.teacherKey, subject, mode, ownerId: teacher.id, createdAt: new Date().toISOString() })
     return r.data
   }
-  if (!subject?.trim() || !teacherName?.trim()) throw new Error('Subject and teacher name are required')
-  const res = local.create({ teacherName: teacherName.trim(), subject: subject.trim(), course, semester })
-  remember({ code: res.code, teacherKey: res.teacherKey, subject, mode, createdAt: new Date().toISOString() })
+  if (!subject?.trim()) throw new Error('Subject is required')
+  const res = local.create({ ...fields, subject: subject.trim() })
+  remember({ code: res.code, teacherKey: res.teacherKey, subject, mode, ownerId: teacher.id, createdAt: new Date().toISOString() })
   return res
 }
 
-export async function createDemoClass(teacherName) {
+export async function createDemoClass(teacher) {
   const mode = await detectMode()
+  const college = teacher.teacherProfile?.college || undefined
   if (mode === 'online') {
-    const r = await postFn('classroom', { action: 'createDemo', teacherName })
+    const r = await postFn('classroom', { action: 'createDemo', teacherName: teacher.name, college })
     if (!r.ok) fail(r)
-    remember({ code: r.data.code, teacherKey: r.data.teacherKey, subject: r.data.class.subject, mode, demo: true, createdAt: new Date().toISOString() })
+    remember({ code: r.data.code, teacherKey: r.data.teacherKey, subject: r.data.class.subject, mode, demo: true, ownerId: teacher.id, createdAt: new Date().toISOString() })
     return r.data
   }
-  const res = local.createDemo(teacherName)
-  remember({ code: res.code, teacherKey: res.teacherKey, subject: res.class.subject, mode, demo: true, createdAt: new Date().toISOString() })
+  const res = local.createDemo(teacher.name, college)
+  remember({ code: res.code, teacherKey: res.teacherKey, subject: res.class.subject, mode, demo: true, ownerId: teacher.id, createdAt: new Date().toISOString() })
   return res
 }
 
